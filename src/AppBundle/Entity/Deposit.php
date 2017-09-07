@@ -70,25 +70,6 @@ class Deposit
     private $auContainer;
 
     /**
-     * The version of OJS that made the deposit and created the export file. THe 
-     * default is 2.4.8. If annotations made use of class constants, it would use
-     * self::DEFAULT_JOURNAL_VERSION.
-     * 
-     * @var string
-     * @ORM\Column(type="string", length=15, nullable=false, options={"default": "2.4.8"})
-     */
-    private $institutionVersion;
-
-    /**
-     * Serialized list of licensing terms as reported in the ATOM deposit.
-     *
-     * @ORM\Column(type="array")
-     *
-     * @var array
-     */
-    private $license;
-
-    /**
      * Bagit doesn't understand compressed files that don't have a file
      * extension. So set the file type, and build file names from that.
      *
@@ -123,32 +104,6 @@ class Deposit
      * @ORM\Column(type="string", nullable=false)
      */
     private $action;
-
-    /**
-     * The issue volume number.
-     *
-     * @var int
-     *
-     * @ORM\Column(type="integer", nullable=false)
-     */
-    private $volume;
-
-    /**
-     * The issue number for the deposit.
-     *
-     * @var int
-     *
-     * @ORM\Column(type="integer")
-     */
-    private $issue;
-
-    /**
-     * Publication date of the deposit content.
-     *
-     * @var string
-     * @ORM\Column(type="date")
-     */
-    private $pubDate;
 
     /**
      * The checksum type for the deposit (SHA1, MD5).
@@ -222,38 +177,6 @@ class Deposit
     private $plnState;
 
     /**
-     * Size of the processed package file, ready for deposit to LOCKSS.
-     *
-     * @var int
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $packageSize;
-
-    /**
-     * Path to the processed package file.
-     *
-     * @var string
-     * @ORM\Column(type="string", nullable=true)
-     */
-    private $packagePath;
-
-    /**
-     * Processed package checksum type.
-     *
-     * @var string
-     * @ORM\Column(type="string", nullable=true)
-     */
-    private $packageChecksumType;
-
-    /**
-     * Checksum for the processed package file.
-     *
-     * @var string
-     * @ORM\Column(type="string", nullable=true)
-     */
-    private $packageChecksumValue;
-
-    /**
      * Date the deposit was sent to LOCKSSOmatic or the PLN.
      *
      * @var date
@@ -289,7 +212,6 @@ class Deposit
      */
     public function __construct()
     {
-        $this->license = array();
         $this->received = new DateTime();
         $this->processingLog = '';
         $this->state = 'depositedByInstitution';
@@ -298,10 +220,11 @@ class Deposit
         $this->harvestAttempts = 0;
     }
 
+
     /**
-     * Get id.
+     * Get id
      *
-     * @return int
+     * @return integer 
      */
     public function getId()
     {
@@ -309,417 +232,9 @@ class Deposit
     }
 
     /**
-     * Set depositUuid.
-     *
-     * @param string $depositUuid
-     *
-     * @return Deposit
-     */
-    public function setDepositUuid($depositUuid)
-    {
-        $this->depositUuid = strtoupper($depositUuid);
-
-        return $this;
-    }
-
-    /**
-     * Get depositUuid.
-     *
-     * @return string
-     */
-    public function getDepositUuid()
-    {
-        return $this->depositUuid;
-    }
-
-    /**
-     * Set received.
-     *
-     * @param DateTime $received
-     *
-     * @return Deposit
-     */
-    public function setReceived($received)
-    {
-        $this->received = $received;
-
-        return $this;
-    }
-
-    /**
-     * Get received.
-     *
-     * @return DateTime
-     */
-    public function getReceived()
-    {
-        return $this->received;
-    }
-
-    /**
-     * Set action.
-     *
-     * @param string $action
-     *
-     * @return Deposit
-     */
-    public function setAction($action)
-    {
-        $this->action = $action;
-
-        return $this;
-    }
-
-    /**
-     * Get action.
-     *
-     * @return string
-     */
-    public function getAction()
-    {
-        return $this->action;
-    }
-
-    /**
-     * Set volume.
-     *
-     * @param int $volume
-     *
-     * @return Deposit
-     */
-    public function setVolume($volume)
-    {
-        $this->volume = $volume;
-
-        return $this;
-    }
-
-    /**
-     * Get volume.
-     *
-     * @return int
-     */
-    public function getVolume()
-    {
-        return $this->volume;
-    }
-
-    /**
-     * Set issue.
-     *
-     * @param int $issue
-     *
-     * @return Deposit
-     */
-    public function setIssue($issue)
-    {
-        $this->issue = $issue;
-
-        return $this;
-    }
-
-    /**
-     * Get issue.
-     *
-     * @return int
-     */
-    public function getIssue()
-    {
-        return $this->issue;
-    }
-
-    /**
-     * Set pubDate.
-     *
-     * @param DateTime $pubDate
-     *
-     * @return Deposit
-     */
-    public function setPubDate(DateTime $pubDate)
-    {
-        $this->pubDate = $pubDate;
-
-        return $this;
-    }
-
-    /**
-     * Get pubDate.
-     *
-     * @return DateTime
-     */
-    public function getPubDate()
-    {
-        return $this->pubDate;
-    }
-
-    /**
-     * Set checksumType.
-     *
-     * @param string $checksumType
-     *
-     * @return Deposit
-     */
-    public function setChecksumType($checksumType)
-    {
-        $this->checksumType = $checksumType;
-
-        return $this;
-    }
-
-    /**
-     * Get checksumType.
-     *
-     * @return string
-     */
-    public function getChecksumType()
-    {
-        return $this->checksumType;
-    }
-
-    /**
-     * Set checksumValue.
-     *
-     * @param string $checksumValue
-     *
-     * @return Deposit
-     */
-    public function setChecksumValue($checksumValue)
-    {
-        $this->checksumValue = strtoupper($checksumValue);
-
-        return $this;
-    }
-
-    /**
-     * Get checksumValue.
-     *
-     * @return string
-     */
-    public function getChecksumValue()
-    {
-        return $this->checksumValue;
-    }
-
-    /**
-     * Set url.
-     *
-     * @param string $url
-     *
-     * @return Deposit
-     */
-    public function setUrl($url)
-    {
-        $this->url = $url;
-
-        return $this;
-    }
-
-    /**
-     * Get url.
-     *
-     * @return string
-     */
-    public function getUrl()
-    {
-        return $this->url;
-    }
-
-    /**
-     * Set size.
-     *
-     * @param int $size
-     *
-     * @return Deposit
-     */
-    public function setSize($size)
-    {
-        $this->size = $size;
-
-        return $this;
-    }
-
-    /**
-     * Get size.
-     *
-     * @return int
-     */
-    public function getSize()
-    {
-        return $this->size;
-    }
-
-    /**
-     * Set state.
-     *
-     * @param string $state
-     *
-     * @return Deposit
-     */
-    public function setState($state)
-    {
-        $this->state = $state;
-
-        return $this;
-    }
-
-    /**
-     * Get state.
-     *
-     * @return string
-     */
-    public function getState()
-    {
-        return $this->state;
-    }
-
-    /**
-     * Set plnState.
-     *
-     * @param string $plnState
-     *
-     * @return Deposit
-     */
-    public function setPlnState($plnState)
-    {
-        $this->plnState = $plnState;
-
-        return $this;
-    }
-
-    /**
-     * Get plnState.
-     *
-     * @return string
-     */
-    public function getPlnState()
-    {
-        return $this->plnState;
-    }
-
-    /**
-     * Set the comment on a deposit.
-     *
-     * @param string $comment
-     *
-     * @return Deposit
-     */
-    public function setComment($comment)
-    {
-        $this->comment = $comment;
-
-        return $this;
-    }
-
-    /**
-     * Get the content on a deposit.
-     *
-     * @return string
-     */
-    public function getComment()
-    {
-        return $this->comment;
-    }
-
-    /**
-     * Set depositDate.
-     *
-     * @param DateTime $depositDate
-     *
-     * @return Deposit
-     */
-    public function setDepositDate(DateTime $depositDate)
-    {
-        $this->depositDate = $depositDate;
-
-        return $this;
-    }
-
-    /**
-     * Get depositDate.
-     *
-     * @return DateTime
-     */
-    public function getDepositDate()
-    {
-        return $this->depositDate;
-    }
-
-    /**
-     * Set depositReceipt.
-     *
-     * @param string $depositReceipt
-     *
-     * @return Deposit
-     */
-    public function setDepositReceipt($depositReceipt)
-    {
-        $this->depositReceipt = $depositReceipt;
-
-        return $this;
-    }
-
-    /**
-     * Get depositReceipt.
-     *
-     * @return string
-     */
-    public function getDepositReceipt()
-    {
-        return $this->depositReceipt;
-    }
-
-    /**
-     * Set institution.
-     *
-     * @param Institution $institution
-     *
-     * @return Deposit
-     */
-    public function setInstitution(Institution $institution = null)
-    {
-        $this->institution = $institution;
-
-        return $this;
-    }
-
-    /**
-     * Get institution.
-     *
-     * @return Institution
-     */
-    public function getInstitution()
-    {
-        return $this->institution;
-    }
-
-    /**
-     * Set the timestamp. Called automatically before inserts.
-     *
-     * @todo the automatic timestamp functions aren't consistently named
-     *
-     * @ORM\PrePersist
-     */
-    public function setTimestamp()
-    {
-        $this->received = new DateTime();
-    }
-
-    /**
-     * return a string representation fo the deposit, which is the deposit's
-     * UUID.
-     *
-     * @return type
-     */
-    public function __toString()
-    {
-        return $this->depositUuid;
-    }
-
-    /**
-     * Set file_type.
+     * Set fileType
      *
      * @param string $fileType
-     *
      * @return Deposit
      */
     public function setFileType($fileType)
@@ -730,9 +245,9 @@ class Deposit
     }
 
     /**
-     * Get file_type.
+     * Get fileType
      *
-     * @return string
+     * @return string 
      */
     public function getFileType()
     {
@@ -740,182 +255,308 @@ class Deposit
     }
 
     /**
-     * Get the file name of the packaged up bag, based on its file type.
+     * Set depositUuid
      *
-     * @return string
-     */
-    public function getFileName()
-    {
-        $extension = '';
-        switch ($this->getFileType()) {
-            case 'application/zip':
-                $extension = '.zip';
-                break;
-            case 'application/x-gzip':
-                $extension = '.tgz';
-                break;
-        }
-
-        return $this->getDepositUuid().$extension;
-    }
-
-    /**
-     * Get the processing history for the deposit.
-     *
-     * @return string
-     */
-    public function getProcessingLog()
-    {
-        return $this->processingLog;
-    }
-
-    /**
-     * Append to the processing history.
-     *
-     * @param string $content
-     */
-    public function addToProcessingLog($content)
-    {
-        $date = date(DateTime::ATOM);
-        $this->processingLog .= "{$date}\n{$content}\n\n";
-    }
-
-    /**
-     * Set packageSize.
-     *
-     * @param int $packageSize
-     *
+     * @param string $depositUuid
      * @return Deposit
      */
-    public function setPackageSize($packageSize)
+    public function setDepositUuid($depositUuid)
     {
-        $this->packageSize = $packageSize;
+        $this->depositUuid = $depositUuid;
 
         return $this;
     }
 
     /**
-     * Get packageSize.
+     * Get depositUuid
      *
-     * @return int
+     * @return string 
      */
-    public function getPackageSize()
+    public function getDepositUuid()
     {
-        return $this->packageSize;
+        return $this->depositUuid;
     }
 
     /**
-     * Set packagePath.
+     * Set received
      *
-     * @param string $packagePath
-     *
+     * @param \DateTime $received
      * @return Deposit
      */
-    public function setPackagePath($packagePath)
+    public function setReceived($received)
     {
-        $this->packagePath = $packagePath;
+        $this->received = $received;
 
         return $this;
     }
 
     /**
-     * Get packagePath.
+     * Get received
      *
-     * @return string
+     * @return \DateTime 
      */
-    public function getPackagePath()
+    public function getReceived()
     {
-        return $this->packagePath;
+        return $this->received;
     }
 
     /**
-     * Set packageChecksumType.
+     * Set action
      *
-     * @param string $packageChecksumType
-     *
+     * @param string $action
      * @return Deposit
      */
-    public function setPackageChecksumType($packageChecksumType)
+    public function setAction($action)
     {
-        $this->packageChecksumType = $packageChecksumType;
+        $this->action = $action;
 
         return $this;
     }
 
     /**
-     * Get packageChecksumType.
+     * Get action
      *
-     * @return string
+     * @return string 
      */
-    public function getPackageChecksumType()
+    public function getAction()
     {
-        return $this->packageChecksumType;
+        return $this->action;
     }
 
     /**
-     * Set packageChecksumValue.
+     * Set checksumType
      *
-     * @param string $packageChecksumValue
-     *
+     * @param string $checksumType
      * @return Deposit
      */
-    public function setPackageChecksumValue($packageChecksumValue)
+    public function setChecksumType($checksumType)
     {
-        $this->packageChecksumValue = strtoupper($packageChecksumValue);
+        $this->checksumType = $checksumType;
 
         return $this;
     }
 
     /**
-     * Get packageChecksumValue.
+     * Get checksumType
      *
-     * @return string
+     * @return string 
      */
-    public function getPackageChecksumValue()
+    public function getChecksumType()
     {
-        return $this->packageChecksumValue;
+        return $this->checksumType;
     }
 
     /**
-     * Set license.
+     * Set checksumValue
      *
-     * @param array $license
-     *
+     * @param string $checksumValue
      * @return Deposit
      */
-    public function setLicense($license)
+    public function setChecksumValue($checksumValue)
     {
-        $this->license = $license;
+        $this->checksumValue = $checksumValue;
 
         return $this;
     }
 
     /**
-     * Add a bit of licensing information to a deposit.
+     * Get checksumValue
      *
-     * @param type $key
-     * @param type $value
+     * @return string 
      */
-    public function addLicense($key, $value)
+    public function getChecksumValue()
     {
-        $this->license[$key] = $value;
+        return $this->checksumValue;
     }
 
     /**
-     * Get license.
+     * Set url
      *
-     * @return array
+     * @param string $url
+     * @return Deposit
      */
-    public function getLicense()
+    public function setUrl($url)
     {
-        return $this->license;
+        $this->url = $url;
+
+        return $this;
     }
 
     /**
-     * Set processingLog.
+     * Get url
+     *
+     * @return string 
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * Set size
+     *
+     * @param integer $size
+     * @return Deposit
+     */
+    public function setSize($size)
+    {
+        $this->size = $size;
+
+        return $this;
+    }
+
+    /**
+     * Get size
+     *
+     * @return integer 
+     */
+    public function getSize()
+    {
+        return $this->size;
+    }
+
+    /**
+     * Set state
+     *
+     * @param string $state
+     * @return Deposit
+     */
+    public function setState($state)
+    {
+        $this->state = $state;
+
+        return $this;
+    }
+
+    /**
+     * Get state
+     *
+     * @return string 
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    /**
+     * Set errorLog
+     *
+     * @param array $errorLog
+     * @return Deposit
+     */
+    public function setErrorLog($errorLog)
+    {
+        $this->errorLog = $errorLog;
+
+        return $this;
+    }
+
+    /**
+     * Get errorLog
+     *
+     * @return array 
+     */
+    public function getErrorLog()
+    {
+        return $this->errorLog;
+    }
+
+    /**
+     * Set errorCount
+     *
+     * @param integer $errorCount
+     * @return Deposit
+     */
+    public function setErrorCount($errorCount)
+    {
+        $this->errorCount = $errorCount;
+
+        return $this;
+    }
+
+    /**
+     * Get errorCount
+     *
+     * @return integer 
+     */
+    public function getErrorCount()
+    {
+        return $this->errorCount;
+    }
+
+    /**
+     * Set plnState
+     *
+     * @param string $plnState
+     * @return Deposit
+     */
+    public function setPlnState($plnState)
+    {
+        $this->plnState = $plnState;
+
+        return $this;
+    }
+
+    /**
+     * Get plnState
+     *
+     * @return string 
+     */
+    public function getPlnState()
+    {
+        return $this->plnState;
+    }
+
+    /**
+     * Set depositDate
+     *
+     * @param \DateTime $depositDate
+     * @return Deposit
+     */
+    public function setDepositDate($depositDate)
+    {
+        $this->depositDate = $depositDate;
+
+        return $this;
+    }
+
+    /**
+     * Get depositDate
+     *
+     * @return \DateTime 
+     */
+    public function getDepositDate()
+    {
+        return $this->depositDate;
+    }
+
+    /**
+     * Set depositReceipt
+     *
+     * @param string $depositReceipt
+     * @return Deposit
+     */
+    public function setDepositReceipt($depositReceipt)
+    {
+        $this->depositReceipt = $depositReceipt;
+
+        return $this;
+    }
+
+    /**
+     * Get depositReceipt
+     *
+     * @return string 
+     */
+    public function getDepositReceipt()
+    {
+        return $this->depositReceipt;
+    }
+
+    /**
+     * Set processingLog
      *
      * @param string $processingLog
-     *
      * @return Deposit
      */
     public function setProcessingLog($processingLog)
@@ -926,88 +567,13 @@ class Deposit
     }
 
     /**
-     * Set errorLog.
+     * Get processingLog
      *
-     * @param array $errorLog
-     *
-     * @return Deposit
+     * @return string 
      */
-    public function setErrorLog($errorLog)
+    public function getProcessingLog()
     {
-        $this->errorLog = $errorLog;
-        $this->updateErrorCount();
-
-        return $this;
-    }
-
-    /**
-     * Add a message to the error log.
-     *
-     * @param type $error
-     *
-     * @return Deposit
-     */
-    public function addErrorLog($error)
-    {
-        $this->errorLog[] = $error;
-        $this->updateErrorCount();
-
-        return $this;
-    }
-
-    /**
-     * Count the errors in the log.
-     *
-     * @return int
-     */
-    public function getErrorCount()
-    {
-        return $this->errorCount;
-    }
-
-    /**
-     * Called automatically to update the error count.
-     *
-     * @ORM\prePersist
-     * @ORM\preUpdate
-     */
-    protected function updateErrorCount()
-    {
-        $this->errorCount = count($this->errorLog);
-    }
-
-    /**
-     * Get errorLog.
-     *
-     * @return array
-     */
-    public function getErrorLog()
-    {
-        return $this->errorLog;
-    }
-
-    /**
-     * Set auContainer.
-     *
-     * @param AuContainer $auContainer
-     *
-     * @return Deposit
-     */
-    public function setAuContainer(AuContainer $auContainer = null)
-    {
-        $this->auContainer = $auContainer;
-
-        return $this;
-    }
-
-    /**
-     * Get auContainer.
-     *
-     * @return AuContainer
-     */
-    public function getAuContainer()
-    {
-        return $this->auContainer;
+        return $this->processingLog;
     }
 
     /**
@@ -1034,25 +600,48 @@ class Deposit
     }
 
     /**
-     * Set institutionVersion
+     * Set institution
      *
-     * @param string $institutionVersion
+     * @param Institution $institution
      * @return Deposit
      */
-    public function setInstitutionVersion($institutionVersion)
+    public function setInstitution(Institution $institution = null)
     {
-        $this->institutionVersion = $institutionVersion;
+        $this->institution = $institution;
 
         return $this;
     }
 
     /**
-     * Get institutionVersion
+     * Get institution
      *
-     * @return string 
+     * @return Institution 
      */
-    public function getInstitutionVersion()
+    public function getInstitution()
     {
-        return $this->institutionVersion;
+        return $this->institution;
+    }
+
+    /**
+     * Set auContainer
+     *
+     * @param AuContainer $auContainer
+     * @return Deposit
+     */
+    public function setAuContainer(AuContainer $auContainer = null)
+    {
+        $this->auContainer = $auContainer;
+
+        return $this;
+    }
+
+    /**
+     * Get auContainer
+     *
+     * @return AuContainer 
+     */
+    public function getAuContainer()
+    {
+        return $this->auContainer;
     }
 }

@@ -33,8 +33,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 /**
  * Default controller for the application, handles the home page and a few others.
  */
-class DefaultController extends Controller
-{
+class DefaultController extends Controller {
+
     /**
      * The LOCKSS permision statement, required for LOCKSS to harvest
      * content.
@@ -49,23 +49,13 @@ class DefaultController extends Controller
      *
      * @return Response
      */
-    public function indexAction()
-    {
+    public function indexAction() {
         $em = $this->container->get('doctrine');
         $user = $this->getUser();
         if (!$user || !$this->getUser()->hasRole('ROLE_USER')) {
             return $this->render('AppBundle:Default:indexAnon.html.twig');
         }
-
-        $institutionRepo = $em->getRepository('AppBundle:Institution');
-        $depositRepo = $em->getRepository('AppBundle:Deposit');
-
-        return $this->render('AppBundle:Default:indexUser.html.twig', array(
-                'institutions_new' => $institutionRepo->findNew(),
-                'institution_summary' => $institutionRepo->statusSummary(),
-                'deposits_new' => $depositRepo->findNew(),
-                'deposit_summary' => $depositRepo->stateSummary(),
-        ));
+        return $this->render('AppBundle:Default:indexUser.html.twig');
     }
 
     /**
@@ -77,8 +67,7 @@ class DefaultController extends Controller
      *
      * @return array
      */
-    public function docsViewAction($path)
-    {
+    public function docsViewAction($path) {
         $em = $this->container->get('doctrine');
         $user = $this->getUser();
         $doc = $em->getRepository('AppBundle:Document')->findOneBy(array(
@@ -91,15 +80,14 @@ class DefaultController extends Controller
         return array('doc' => $doc);
     }
 
-/**
- * @Route("/docs", name="doc_list")
- * @Template()
- *
- * @return array
- */
+    /**
+     * @Route("/docs", name="doc_list")
+     * @Template()
+     *
+     * @return array
+     */
     // Must be after docsViewAction()
-    public function docsListAction()
-    {
+    public function docsListAction() {
         $em = $this->container->get('doctrine');
         $docs = $em->getRepository('AppBundle:Document')->findAll();
 
@@ -115,8 +103,7 @@ class DefaultController extends Controller
      *
      * @return Response
      */
-    public function permissionAction(Request $request)
-    {
+    public function permissionAction(Request $request) {
         $this->get('monolog.logger.lockss')->notice("permission - {$request->getClientIp()}");
         $response = new Response(self::PERMISSION_STMT, Response::HTTP_OK, array(
             'content-type' => 'text/plain',
@@ -136,8 +123,7 @@ class DefaultController extends Controller
      *
      * @return BinaryFileResponse
      */
-    public function fetchAction(Request $request, $institutionUuid, $depositUuid)
-    {
+    public function fetchAction(Request $request, $institutionUuid, $depositUuid) {
         $institutionUuid = strtoupper($institutionUuid);
         $depositUuid = strtoupper($depositUuid);
         $logger = $this->get('monolog.logger.lockss');
@@ -171,11 +157,9 @@ class DefaultController extends Controller
      *
      * @Route("/onix.xml")
      */
-    public function onyxRedirect()
-    {
+    public function onyxRedirect() {
         return new RedirectResponse(
-            $this->generateUrl('onix', array('_format' => 'xml')),
-            Response::HTTP_MOVED_PERMANENTLY
+                $this->generateUrl('onix', array('_format' => 'xml')), Response::HTTP_MOVED_PERMANENTLY
         );
     }
 
@@ -191,8 +175,7 @@ class DefaultController extends Controller
      * @param Request $request
      * @Route("/feeds/onix.{_format}", name="onix", requirements={"_format":"xml|csv"})
      */
-    public function onyxFeedAction($_format)
-    {
+    public function onyxFeedAction($_format) {
         $path = $this->container->get('filepaths')->getOnixPath($_format);
         $fs = new Filesystem();
         if (!$fs->exists($path)) {
@@ -233,12 +216,12 @@ class DefaultController extends Controller
      *
      * @return array
      */
-    public function termsFeedAction(Request $request)
-    {
+    public function termsFeedAction(Request $request) {
         $em = $this->get('doctrine')->getManager();
         $repo = $em->getRepository('AppBundle:TermOfUse');
         $terms = $repo->getTerms();
 
         return array('terms' => $terms);
     }
+
 }

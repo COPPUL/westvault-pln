@@ -19,12 +19,9 @@
 
 namespace AppBundle\Entity;
 
-use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Institution.
@@ -79,8 +76,7 @@ class Institution
 
     /**
      * The institution's deposits.
-     *
-     * @var Deposit[]|ArrayCollection
+     * @var Deposit[]|Collection
      * @ORM\OneToMany(targetEntity="Deposit", mappedBy="institution")
      */
     private $deposits;
@@ -153,10 +149,10 @@ class Institution
     /**
      * Add deposits
      *
-     * @param \AppBundle\Entity\Deposit $deposits
+     * @param Deposit $deposits
      * @return Institution
      */
-    public function addDeposit(\AppBundle\Entity\Deposit $deposits)
+    public function addDeposit(Deposit $deposits)
     {
         $this->deposits[] = $deposits;
 
@@ -166,9 +162,9 @@ class Institution
     /**
      * Remove deposits
      *
-     * @param \AppBundle\Entity\Deposit $deposits
+     * @param Deposit $deposits
      */
-    public function removeDeposit(\AppBundle\Entity\Deposit $deposits)
+    public function removeDeposit(Deposit $deposits)
     {
         $this->deposits->removeElement($deposits);
     }
@@ -176,7 +172,7 @@ class Institution
     /**
      * Get deposits
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return Collection 
      */
     public function getDeposits()
     {

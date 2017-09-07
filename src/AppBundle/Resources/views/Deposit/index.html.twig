@@ -42,12 +42,8 @@
                         <th>Received</th>
                         <th>Action</th>
                         <th>Institution</th>
-                        <th>Volume</th>
-                        <th>Issue</th>
                         <th>Size</th>
-                        <th>Pubdate</th>
                         <th>State</th>
-                        <th>Errors</th>
                         <th>Plnstate</th>
                     </tr>
                 </thead>
@@ -58,12 +54,8 @@
                             <td>{% if entity.received %}{{ entity.received|date('Y-m-d') }}{% endif %}</td>
                             <td>{{ entity.action }}</td>
                             <td><a href="{{ path('institution_show', {'id': entity.institution.id}) }}">{{ entity.institution.title }}</a></td>
-                            <td>{{ entity.volume }}</td>
-                            <td>{{ entity.issue }}</td>
                             <td>{{ entity.size }}</td>
-                            <td>{{ entity.pubDate|date('Y-m-d') }}</td>
                             <td>{{ entity.state }}</td>
-                            <td>{{ entity.errorCount }}</td>
                             <td>{{ entity.plnState }}</td>
                         </tr>
                     {% endfor %}
