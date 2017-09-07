@@ -35,8 +35,8 @@ services:
             - [ setLogger, ["@monolog.logger"]]
             - [ setRouter, ["@router"]]
 
-    journalbuilder:
-        class: AppBundle\Services\JournalBuilder
+    institutionbuilder:
+        class: AppBundle\Services\InstitutionBuilder
         calls:
             - [ setManager, ["@doctrine"]]
             - [ setLogger, ["@monolog.logger"]]
@@ -56,7 +56,7 @@ services:
             - [ setLogger, ["@monolog.logger.processing"]]
             - [ setTemplating, ["@templating"]]
             - [ setRouter, ["@router"]]
-            - [ setPlnJournalTitle, ["%pln_journal_name%"]]
+            - [ setPlnInstitutionTitle, ["%pln_institution_name%"]]
             - [ setFilePaths, ["@filepaths"]]
 
     twig.extension.pcre:
