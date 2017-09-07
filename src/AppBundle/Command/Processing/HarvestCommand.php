@@ -27,7 +27,7 @@ use GuzzleHttp\Message\Response;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Harvest a deposit from a journal. Attempts to check file sizes via HTTP HEAD
+ * Harvest a deposit from a institution. Attempts to check file sizes via HTTP HEAD
  * before downloading, and checks that there will be sufficient disk space.
  */
 class HarvestCommand extends AbstractProcessingCmd
@@ -266,7 +266,7 @@ class HarvestCommand extends AbstractProcessingCmd
      */
     public function processingState()
     {
-        return 'depositedByJournal';
+        return 'depositedByInstitution';
     }
 
     /**

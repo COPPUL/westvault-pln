@@ -12,28 +12,28 @@
         <PreservationAgency>
             <PreservationAgencyName>Public Knowledge Project PLN</PreservationAgencyName>
         </PreservationAgency>
-        {% for journal in journals %}
-            {% set deposits = journal.getSentDeposits() %}
+        {% for institution in institutions %}
+            {% set deposits = institution.getSentDeposits() %}
             {% if deposits|length > 0 %}
                 <HoldingsRecord>
                     <NotificationType>00</NotificationType>
                     <ResourceVersion>
                         <ResourceVersionIdentifier>
                             <ResourceVersionIDType>07</ResourceVersionIDType>
-                            <IDValue>{{ journal.issn }}</IDValue>
+                            <IDValue>{{ institution.issn }}</IDValue>
                         </ResourceVersionIdentifier>
                         <Title>
                             <TitleType>01</TitleType>
-                            <TitleText>{{ journal.title }}</TitleText>
+                            <TitleText>{{ institution.title }}</TitleText>
                         </Title>
                         <Publisher>
                             <PublishingRole>01</PublishingRole>
-                            <PublisherName>{{ journal.publisherName }}</PublisherName>
+                            <PublisherName>{{ institution.publisherName }}</PublisherName>
                         </Publisher>
                         <OnlinePackage>
                             <Website>
                                 <WebsiteRole>05</WebsiteRole>
-                                <WebsiteLink>{{ journal.url }}</WebsiteLink>
+                                <WebsiteLink>{{ institution.url }}</WebsiteLink>
                             </Website>
                             {% for deposit in deposits %}
                                 <PackageDetail>

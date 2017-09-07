@@ -30,7 +30,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Build a form to edit a blacklist entry.
  */
-class JournalType extends AbstractType
+class InstitutionType extends AbstractType
 {
     /**
      * {@inheritdoc}
@@ -40,23 +40,7 @@ class JournalType extends AbstractType
         $builder->add('uuid', new TextType(), array(
             'read_only' => true
         ));
-        $builder->add('contacted', new DateType(), array(
-            'widget' => 'single_text',
-            'required' => false,
-        ));
-        $builder->add('termsAccepted');
-        $builder->add('notified', new DateType(), array(
-            'widget' => 'single_text',
-            'required' => false,
-        ));
-        $builder->add('title');
-        $builder->add('ojsVersion');
-        $builder->add('issn');
-        $builder->add('url', new UrlType());
-        $builder->add('status');
-        $builder->add('email', new EmailType());
-        $builder->add('publisherName');
-        $builder->add('publisherUrl', new UrlType());
+        $builder->add('name');
     }
 
     /**
@@ -65,7 +49,7 @@ class JournalType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'AppBundle\Entity\Journal',
+            'data_class' => 'AppBundle\Entity\Institution',
         ));
     }
 
@@ -74,6 +58,6 @@ class JournalType extends AbstractType
      */
     public function getName()
     {
-        return 'appbundle_journal';
+        return 'appbundle_institution';
     }
 }

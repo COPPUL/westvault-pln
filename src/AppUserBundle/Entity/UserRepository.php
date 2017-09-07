@@ -30,7 +30,7 @@ use Doctrine\ORM\EntityRepository;
 class UserRepository extends EntityRepository
 {
     /**
-     * Find the users that should be notified about a journal going dark.
+     * Find the users that should be notified about a institution going dark.
      *
      * @return User[]
      */

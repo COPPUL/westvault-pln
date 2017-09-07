@@ -83,9 +83,9 @@ class ValidateBagCommand extends AbstractProcessingCmd
 
             return false;
         }
-        $journalVersion = $bag->getBagInfoData('PKP-PLN-OJS-Version');
-        if($journalVersion && $journalVersion !== $deposit->getJournalVersion()) {
-            $this->logger->warning("Bag journal version tag {$journalVersion} does not match deposit journal version {$deposit->getJournalVersion()}");
+        $institutionVersion = $bag->getBagInfoData('PKP-PLN-OJS-Version');
+        if($institutionVersion && $institutionVersion !== $deposit->getInstitutionVersion()) {
+            $this->logger->warning("Bag institution version tag {$institutionVersion} does not match deposit institution version {$deposit->getInstitutionVersion()}");
         }
 
         return true;

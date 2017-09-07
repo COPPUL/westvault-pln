@@ -30,7 +30,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Tests\Logger;
 
 /**
- * Send reminders about journals that haven't contacted the PLN in a while.
+ * Send reminders about institutions that haven't contacted the PLN in a while.
  */
 class HealthReminderCommand extends ContainerAwareCommand
 {
@@ -50,12 +50,12 @@ class HealthReminderCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this->setName('pln:health:reminder');
-        $this->setDescription('Remind admins about silent journals.');
+        $this->setDescription('Remind admins about silent institutions.');
         $this->addOption(
             'dry-run',
             'd',
             InputOption::VALUE_NONE,
-            'Do not update journal status'
+            'Do not update institution status'
         );
         parent::configure();
     }
@@ -77,12 +77,12 @@ class HealthReminderCommand extends ContainerAwareCommand
      *
      * @param int       $days
      * @param User[]    $users
-     * @param Journal[] $journals
+     * @param Institution[] $institutions
      */
-    protected function sendReminders($days, $users, $journals)
+    protected function sendReminders($days, $users, $institutions)
     {
         $notification = $this->templating->render('AppBundle:HealthCheck:reminder.txt.twig', array(
-            'journals' => $journals,
+            'institutions' => $institutions,
             'days' => $days,
         ));
         $mailer = $this->getContainer()->get('mailer');
@@ -109,10 +109,10 @@ class HealthReminderCommand extends ContainerAwareCommand
     {
         $em = $this->getContainer()->get('doctrine')->getManager();
         $days = $this->getContainer()->getParameter('days_reminder');
-        $journals = $em->getRepository('AppBundle:Journal')->findOverdue($days);
-        $count = count($journals);
-        $this->logger->notice("Found {$count} overdue journals.");
-        if (count($journals) === 0) {
+        $institutions = $em->getRepository('AppBundle:Institution')->findOverdue($days);
+        $count = count($institutions);
+        $this->logger->notice("Found {$count} overdue institutions.");
+        if (count($institutions) === 0) {
             return;
         }
 
@@ -122,10 +122,10 @@ class HealthReminderCommand extends ContainerAwareCommand
 
             return;
         }
-        $this->sendReminders($days, $users, $journals);
+        $this->sendReminders($days, $users, $institutions);
 
-        foreach ($journals as $journal) {
-            $journal->setNotified(new DateTime());
+        foreach ($institutions as $institution) {
+            $institution->setNotified(new DateTime());
         }
 
         if (!$input->getOption('dry-run')) {

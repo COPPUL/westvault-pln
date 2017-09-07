@@ -7,12 +7,12 @@
 
 {% block body -%}
 
-<p>Showing deposits for {{ journal.title }}</p>
+<p>Showing deposits for {{ institution.title }}</p>
 
     <div class="btn-toolbar">
         <div class="btn-group pull-right">
-            <a href="{{ path('journal_show', {'id': journal.id}) }}" class="btn btn-default">
-                <span class="glyphicon glyphicon-arrow-left"></span> Journal
+            <a href="{{ path('institution_show', {'id': institution.id}) }}" class="btn btn-default">
+                <span class="glyphicon glyphicon-arrow-left"></span> Institution
             </a>
         </div>
     </div>

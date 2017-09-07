@@ -19,7 +19,7 @@
 
 namespace AppBundle\Services;
 
-use AppBundle\Entity\Journal;
+use AppBundle\Entity\Institution;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\EntityManager;
 use Exception;
@@ -28,9 +28,9 @@ use SimpleXMLElement;
 use Symfony\Component\Routing\Router;
 
 /**
- * Construct a journal, and save it to the database.
+ * Construct a institution, and save it to the database.
  */
-class JournalBuilder
+class InstitutionBuilder
 {
     /**
      * @var EntityManager
@@ -70,7 +70,7 @@ class JournalBuilder
     /**
      * Set the router.
      *
-     * @todo why does the journal builder need a router?
+     * @todo why does the institution builder need a router?
      *
      * @param Router $router
      */
@@ -102,31 +102,31 @@ class JournalBuilder
     }
 
     /**
-     * Build and persist a journal from XML.
+     * Build and persist a institution from XML.
      *
      * @param SimpleXMLElement $xml
-     * @param string           $journal_uuid
+     * @param string           $institution_uuid
      *
-     * @return Journal
+     * @return Institution
      */
-    public function fromXml(SimpleXMLElement $xml, $journal_uuid)
+    public function fromXml(SimpleXMLElement $xml, $institution_uuid)
     {
-        $journal = $this->em->getRepository('AppBundle:Journal')->findOneBy(array(
-            'uuid' => $journal_uuid,
+        $institution = $this->em->getRepository('AppBundle:Institution')->findOneBy(array(
+            'uuid' => $institution_uuid,
         ));
-        if ($journal === null) {
-            $journal = new Journal();
+        if ($institution === null) {
+            $institution = new Institution();
         }
-        $journal->setUuid($journal_uuid);
-        $journal->setTitle($this->getXmlValue($xml, '//atom:title'));
-        $journal->setUrl(html_entity_decode($this->getXmlValue($xml, '//pkp:journal_url'))); // &amp; -> &
-        $journal->setEmail($this->getXmlValue($xml, '//atom:email'));
-        $journal->setIssn($this->getXmlValue($xml, '//pkp:issn'));
-        $journal->setPublisherName($this->getXmlValue($xml, '//pkp:publisherName'));
-        $journal->setPublisherUrl(html_entity_decode($this->getXmlValue($xml, '//pkp:publisherUrl'))); // &amp; -> &
-        $this->em->persist($journal);
-        $this->em->flush($journal);
+        $institution->setUuid($institution_uuid);
+        $institution->setTitle($this->getXmlValue($xml, '//atom:title'));
+        $institution->setUrl(html_entity_decode($this->getXmlValue($xml, '//pkp:institution_url'))); // &amp; -> &
+        $institution->setEmail($this->getXmlValue($xml, '//atom:email'));
+        $institution->setIssn($this->getXmlValue($xml, '//pkp:issn'));
+        $institution->setPublisherName($this->getXmlValue($xml, '//pkp:publisherName'));
+        $institution->setPublisherUrl(html_entity_decode($this->getXmlValue($xml, '//pkp:publisherUrl'))); // &amp; -> &
+        $this->em->persist($institution);
+        $this->em->flush($institution);
 
-        return $journal;
+        return $institution;
     }
 }

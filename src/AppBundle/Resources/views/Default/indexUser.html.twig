@@ -16,15 +16,15 @@
             <div class='col-md-6'>
                 <div class='panel panel-default'>
                     <div class='panel-heading'>
-                        <h3 class='panel-title'>New Journals</h3>
+                        <h3 class='panel-title'>New Institutions</h3>
                     </div>
                     <div class='panel-body'>
                         <ul class='list-group'>
-                            {% for journal in journals_new %}
+                            {% for institution in institutions_new %}
                                 <li class='list-group-item'>
-                                    <a href='{{ path('journal_show', {'id': journal.id}) }}'>{{journal.title}}</a><br/>
-                                    <a href='{{ journal.url }}'>{{journal.url}}</a><br/>
-                                    Contacted {{ journal.contacted|date }}
+                                    <a href='{{ path('institution_show', {'id': institution.id}) }}'>{{institution.title}}</a><br/>
+                                    <a href='{{ institution.url }}'>{{institution.url}}</a><br/>
+                                    Contacted {{ institution.contacted|date }}
                                 </li>
                             {% endfor %}
                         </ul>                        
@@ -41,7 +41,7 @@
                             {% for deposit in deposits_new %}
                                 <li class='list-group-item'>
                                     <a href='{{ path('deposit_show', {'id': deposit.id}) }}'>
-                                        {{deposit.journal.title}} vol. {{ deposit.volume }} no. {{ deposit.issue }}
+                                        {{deposit.institution.title}} vol. {{ deposit.volume }} no. {{ deposit.issue }}
                                     </a><br/>
                                     Published {{ deposit.pubDate|date('D, d M Y') }}, Received {{ deposit.received|date }}
                                 </li>
@@ -56,13 +56,13 @@
             <div class='col-md-6'>
                 <div class='panel panel-default'>                        
                     <div class='panel-heading'>
-                        <h3 class='panel-title'>Journal Statuses</h3>
+                        <h3 class='panel-title'>Institution Statuses</h3>
                     </div>
                     <div class='panel-body'>
                         <ul class='list-group'>
-                            {% for status in journal_summary %}
+                            {% for status in institution_summary %}
                                 <li class='list-group-item'>
-                                    <a href="{{path('journal', { 'status': status.status })}}">{{ status.status }}</a><span class='badge'>{{status.ct}}</span>
+                                    <a href="{{path('institution', { 'status': status.status })}}">{{ status.status }}</a><span class='badge'>{{status.ct}}</span>
                                 </li>
                             {% endfor %}
                         </ul>

@@ -20,7 +20,7 @@
 namespace AppBundle\Command\Shell;
 
 use AppBundle\Entity\Deposit;
-use AppBundle\Entity\Journal;
+use AppBundle\Entity\Institution;
 use AppBundle\Services\FilePaths;
 use AppBundle\Services\SwordClient;
 use Doctrine\Bundle\DoctrineBundle\Registry;
@@ -36,7 +36,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
- * Fetch all the content of one or more journals from LOCKSS via LOCKSSOMatic.
+ * Fetch all the content of one or more institutions from LOCKSS via LOCKSSOMatic.
  */
 class FetchContentCommand extends ContainerAwareCommand
 {
@@ -91,8 +91,8 @@ class FetchContentCommand extends ContainerAwareCommand
     public function configure()
     {
         $this->setName('pln:fetch');
-        $this->setDescription('Download the archived content for one or more journals.');
-        $this->addArgument('journals', InputArgument::IS_ARRAY, 'The database ID of one or more journals.');
+        $this->setDescription('Download the archived content for one or more institutions.');
+        $this->addArgument('institutions', InputArgument::IS_ARRAY, 'The database ID of one or more institutions.');
     }
 
     /**
@@ -129,8 +129,8 @@ class FetchContentCommand extends ContainerAwareCommand
     public function fetch(Deposit $deposit, $href)
     {
         $client = $this->getHttpClient();
-        $filepath = $this->filePaths->getRestoreDir($deposit->getJournal()).'/'.basename($href);
-        $this->logger->notice("Saving {$deposit->getJournal()->getTitle()} vol. {$deposit->getVolume()} no. {$deposit->getIssue()} to {$filepath}");
+        $filepath = $this->filePaths->getRestoreDir($deposit->getInstitution()).'/'.basename($href);
+        $this->logger->notice("Saving {$deposit->getInstitution()->getTitle()} vol. {$deposit->getVolume()} no. {$deposit->getIssue()} to {$filepath}");
         try {
             $client->get($href, array(
                 'allow_redirects' => false,
@@ -147,16 +147,16 @@ class FetchContentCommand extends ContainerAwareCommand
     }
 
     /**
-     * Download all the content from one journal.
+     * Download all the content from one institution.
      *
      * Requests a SWORD deposit statement from LOCKSSOMatic, and uses the
      * sword:originalDeposit element to fetch the content.
      *
-     * @param Journal $journal
+     * @param Institution $institution
      */
-    public function downloadJournal(Journal $journal)
+    public function downloadInstitution(Institution $institution)
     {
-        foreach ($journal->getDeposits() as $deposit) {
+        foreach ($institution->getDeposits() as $deposit) {
             $statement = $this->swordClient->statement($deposit);
             $originals = $statement->xpath('//sword:originalDeposit');
 
@@ -167,15 +167,15 @@ class FetchContentCommand extends ContainerAwareCommand
     }
 
     /**
-     * Get a list of journals to download.
+     * Get a list of institutions to download.
      *
-     * @param array $journalIds
+     * @param array $institutionIds
      *
-     * @return Collection|Journal[]
+     * @return Collection|Institution[]
      */
-    public function getJournals($journalIds)
+    public function getInstitutions($institutionIds)
     {
-        return $this->em->getRepository('AppBundle:Journal')->findBy(array('id' => $journalIds));
+        return $this->em->getRepository('AppBundle:Institution')->findBy(array('id' => $institutionIds));
     }
 
     /**
@@ -186,10 +186,10 @@ class FetchContentCommand extends ContainerAwareCommand
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $journalIds = $input->getArgument('journals');
-        $journals = $this->getJournals($journalIds);
-        foreach ($journals as $journal) {
-            $this->downloadJournal($journal);
+        $institutionIds = $input->getArgument('institutions');
+        $institutions = $this->getInstitutions($institutionIds);
+        foreach ($institutions as $institution) {
+            $this->downloadInstitution($institution);
         }
     }
 }

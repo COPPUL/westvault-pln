@@ -81,7 +81,7 @@ class ListDepositsCommand extends ContainerAwareCommand
         $state = $input->getArgument('state');
         $deposits = $repo->findBy(array('state' => $state));
         foreach ($deposits as $deposit) {
-            $output->writeln("{$deposit->getJournal()->getUuid()}/{$deposit->getDepositUuid()}");
+            $output->writeln("{$deposit->getInstitution()->getUuid()}/{$deposit->getDepositUuid()}");
         }
     }
 }

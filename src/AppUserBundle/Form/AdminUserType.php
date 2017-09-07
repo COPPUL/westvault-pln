@@ -40,7 +40,7 @@ class AdminUserType extends AbstractType
                 ->add('fullname')
                 ->add('institution')
                 ->add('notify', 'checkbox', array(
-                    'label' => 'Notify user when journals go silent',
+                    'label' => 'Notify user when institutions go silent',
                     'required' => false,
                 ))
                 ->add('enabled', 'checkbox', array(

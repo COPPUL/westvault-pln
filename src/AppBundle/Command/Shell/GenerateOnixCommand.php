@@ -19,7 +19,7 @@
 
 namespace AppBundle\Command\Shell;
 
-use AppBundle\Entity\Journal;
+use AppBundle\Entity\Institution;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Collections\Collection;
 use Monolog\Logger;
@@ -76,15 +76,15 @@ class GenerateOnixCommand extends ContainerAwareCommand
     }
 
     /**
-     * Get the journals to process.
+     * Get the institutions to process.
      *
-     * @return Collection|Journal[]
+     * @return Collection|Institution[]
      */
-    protected function getJournals()
+    protected function getInstitutions()
     {
-        $journals = $this->em->getRepository('AppBundle:Journal')->findAll();
+        $institutions = $this->em->getRepository('AppBundle:Institution')->findAll();
 
-        return $journals;
+        return $institutions;
     }
 
     /**
@@ -95,7 +95,7 @@ class GenerateOnixCommand extends ContainerAwareCommand
     protected function generateCsv($filePath)
     {
         $handle = fopen($filePath, 'w');
-        $journals = $this->getJournals();
+        $institutions = $this->getInstitutions();
         fputcsv($handle, array('Generated', date('Y-m-d')));
         fputcsv($handle, array(
             'ISSN',
@@ -107,8 +107,8 @@ class GenerateOnixCommand extends ContainerAwareCommand
             'Published',
             'Deposited',
         ));
-        foreach ($journals as $journal) {
-            $deposits = $journal->getSentDeposits();
+        foreach ($institutions as $institution) {
+            $deposits = $institution->getSentDeposits();
             if ($deposits->count() === 0) {
                 continue;
             }
@@ -117,10 +117,10 @@ class GenerateOnixCommand extends ContainerAwareCommand
                     continue;
                 }
                 fputcsv($handle, array(
-                    $journal->getIssn(),
-                    $journal->getTitle(),
-                    $journal->getPublisherName(),
-                    $journal->getUrl(),
+                    $institution->getIssn(),
+                    $institution->getTitle(),
+                    $institution->getPublisherName(),
+                    $institution->getUrl(),
                     $deposit->getVolume(),
                     $deposit->getIssue(),
                     $deposit->getPubDate()->format('Y-m-d'),
@@ -137,9 +137,9 @@ class GenerateOnixCommand extends ContainerAwareCommand
      */
     protected function generateXml($filePath)
     {
-        $journals = $this->getJournals();
+        $institutions = $this->getInstitutions();
         $onix = $this->templating->render('AppBundle:Onix:onix.xml.twig', array(
-            'journals' => $journals,
+            'institutions' => $institutions,
         ));
         $fh = fopen($filePath, 'w');
         fwrite($fh, $onix);

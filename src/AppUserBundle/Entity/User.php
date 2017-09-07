@@ -58,7 +58,7 @@ class User extends BaseUser
     private $institution;
 
     /**
-     * Should this user get notification emails when a journal goes silent?
+     * Should this user get notification emails when a institution goes silent?
      *
      * @var bool
      * @ORM\Column(name="notify", type="boolean")

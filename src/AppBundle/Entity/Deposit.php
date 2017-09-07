@@ -24,7 +24,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * A single Deposit from a journal.
+ * A single Deposit from a institution.
  *
  * @ORM\Table()
  * @ORM\HasLifecycleCallbacks
@@ -33,7 +33,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Deposit
 {
     /**
-     * The journal version was added to the PKP PLN plugin in OJS version 3. If
+     * The institution version was added to the PKP PLN plugin in OJS version 3. If
      * a deposit doesn't have a version attribute, then assume it is OJS 2.4.8.
      */
     const DEFAULT_JOURNAL_VERSION = '2.4.8';
@@ -50,14 +50,14 @@ class Deposit
     private $id;
 
     /**
-     * The journal that sent this deposit.
+     * The institution that sent this deposit.
      *
-     * @var Journal
+     * @var Institution
      *
-     * @ORM\ManyToOne(targetEntity="Journal", inversedBy="deposits")
-     * @ORM\JoinColumn(name="journal_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Institution", inversedBy="deposits")
+     * @ORM\JoinColumn(name="institution_id", referencedColumnName="id")
      */
-    private $journal;
+    private $institution;
     
     /**
      * The AuContainer that holds this deposit.
@@ -77,7 +77,7 @@ class Deposit
      * @var string
      * @ORM\Column(type="string", length=15, nullable=false, options={"default": "2.4.8"})
      */
-    private $journalVersion;
+    private $institutionVersion;
 
     /**
      * Serialized list of licensing terms as reported in the ATOM deposit.
@@ -292,7 +292,7 @@ class Deposit
         $this->license = array();
         $this->received = new DateTime();
         $this->processingLog = '';
-        $this->state = 'depositedByJournal';
+        $this->state = 'depositedByInstitution';
         $this->errorLog = array();
         $this->errorCount = 0;
         $this->harvestAttempts = 0;
@@ -669,27 +669,27 @@ class Deposit
     }
 
     /**
-     * Set journal.
+     * Set institution.
      *
-     * @param Journal $journal
+     * @param Institution $institution
      *
      * @return Deposit
      */
-    public function setJournal(Journal $journal = null)
+    public function setInstitution(Institution $institution = null)
     {
-        $this->journal = $journal;
+        $this->institution = $institution;
 
         return $this;
     }
 
     /**
-     * Get journal.
+     * Get institution.
      *
-     * @return Journal
+     * @return Institution
      */
-    public function getJournal()
+    public function getInstitution()
     {
-        return $this->journal;
+        return $this->institution;
     }
 
     /**
@@ -1034,25 +1034,25 @@ class Deposit
     }
 
     /**
-     * Set journalVersion
+     * Set institutionVersion
      *
-     * @param string $journalVersion
+     * @param string $institutionVersion
      * @return Deposit
      */
-    public function setJournalVersion($journalVersion)
+    public function setInstitutionVersion($institutionVersion)
     {
-        $this->journalVersion = $journalVersion;
+        $this->institutionVersion = $institutionVersion;
 
         return $this;
     }
 
     /**
-     * Get journalVersion
+     * Get institutionVersion
      *
      * @return string 
      */
-    public function getJournalVersion()
+    public function getInstitutionVersion()
     {
-        return $this->journalVersion;
+        return $this->institutionVersion;
     }
 }

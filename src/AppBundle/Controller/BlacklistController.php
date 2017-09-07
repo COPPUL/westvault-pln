@@ -192,7 +192,7 @@ class BlacklistController extends Controller
             throw $this->createNotFoundException('Unable to find Blacklist entity.');
         }
 
-        $journal = $em->getRepository('AppBundle:Journal')->findOneBy(array(
+        $institution = $em->getRepository('AppBundle:Institution')->findOneBy(array(
             'uuid' => $entity->getUuid(),
         ));
 
@@ -200,7 +200,7 @@ class BlacklistController extends Controller
 
         return array(
             'entity' => $entity,
-            'journal' => $journal,
+            'institution' => $institution,
             'delete_form' => $deleteForm->createView(),
         );
     }

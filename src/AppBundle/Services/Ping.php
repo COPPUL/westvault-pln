@@ -19,7 +19,7 @@
 
 namespace AppBundle\Services;
 
-use AppBundle\Entity\Journal;
+use AppBundle\Entity\Institution;
 use AppBundle\Utility\PingResult;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Registry;
@@ -31,7 +31,7 @@ use GuzzleHttp\Exception\XmlParseException;
 use Monolog\Logger;
 
 /**
- * Send a PING request to a journal, and return the result.
+ * Send a PING request to a institution, and return the result.
  */
 class Ping
 {
@@ -93,18 +93,18 @@ class Ping
     }
 
     /**
-     * Ping a journal, check on it's health, etc.
+     * Ping a institution, check on it's health, etc.
      *
-     * @param Journal $journal
+     * @param Institution $institution
      *
      * @return PingResult
      *
      * @throws Exception
      */
-    public function ping(Journal $journal)
+    public function ping(Institution $institution)
     {
-        $this->logger->notice("Pinging {$journal}");
-        $url = $journal->getGatewayUrl();
+        $this->logger->notice("Pinging {$institution}");
+        $url = $institution->getGatewayUrl();
         $client = $this->getClient();
         try {
             $response = $client->get($url, array(
@@ -116,31 +116,31 @@ class Ping
             ));
             $pingResponse = new PingResult($response);
             if ($pingResponse->getHttpStatus() === 200) {
-                $journal->setContacted(new DateTime());
-                $journal->setTitle($pingResponse->getJournalTitle('(unknown title)'));
-                $journal->setOjsVersion($pingResponse->getOjsRelease());
-                $journal->setTermsAccepted($pingResponse->areTermsAccepted() === 'yes');
+                $institution->setContacted(new DateTime());
+                $institution->setTitle($pingResponse->getInstitutionTitle('(unknown title)'));
+                $institution->setOjsVersion($pingResponse->getOjsRelease());
+                $institution->setTermsAccepted($pingResponse->areTermsAccepted() === 'yes');
             } else {
-                $journal->setStatus('ping-error');
+                $institution->setStatus('ping-error');
             }
-            $this->em->flush($journal);
+            $this->em->flush($institution);
 
             return $pingResponse;
         } catch (RequestException $e) {
-            $journal->setStatus('ping-error');
-            $this->em->flush($journal);
+            $institution->setStatus('ping-error');
+            $this->em->flush($institution);
             if ($e->hasResponse()) {
                 return new PingResult($e->getResponse());
             }
             throw $e;
         } catch (XmlParseException $e) {
-            $journal->setStatus('ping-error');
-            $this->em->flush($journal);
+            $institution->setStatus('ping-error');
+            $this->em->flush($institution);
 
             return new PingResult($e->getResponse());
         } catch (Exception $e) {
-            $journal->setStatus('ping-error');
-            $this->em->flush($journal);
+            $institution->setStatus('ping-error');
+            $this->em->flush($institution);
             throw $e;
         }
     }

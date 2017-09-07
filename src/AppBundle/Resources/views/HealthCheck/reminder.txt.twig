@@ -1,19 +1,19 @@
 This is an automated reminder. 
 
-The following OJS Journals have not contacted the PKP PLN Staging Server, and
+The following OJS Institutions have not contacted the PKP PLN Staging Server, and
 may need to be triggered.
 
-{% for journal in journals %}
-    {{ journal.title }} - {{ journal.url }}
-    Most recent contact: {{ journal.contacted|date }}
-    {% if journal.publisherName %}Published by {{ journal.publisherName }}{% endif %}
+{% for institution in institutions %}
+    {{ institution.title }} - {{ institution.url }}
+    Most recent contact: {{ institution.contacted|date }}
+    {% if institution.publisherName %}Published by {{ institution.publisherName }}{% endif %}
     
-    {% if journal.publisherUrl %}{{ journal.publisherUrl }}{% endif %}
+    {% if institution.publisherUrl %}{{ institution.publisherUrl }}{% endif %}
     
-    This journal has made {{ journal.deposits|length }} deposits.
+    This institution has made {{ institution.deposits|length }} deposits.
 {% endfor %}
 
-Please check with the journal and/or the publishers to see if the journal
+Please check with the institution and/or the publishers to see if the institution
 should be triggered.
 
-Journal status can be updated at {{ url('journal') }}.
+Institution status can be updated at {{ url('institution') }}.

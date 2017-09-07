@@ -20,7 +20,7 @@
 namespace AppBundle\Services;
 
 use AppBundle\Entity\Deposit;
-use AppBundle\Entity\Journal;
+use AppBundle\Entity\Institution;
 use Monolog\Logger;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -122,14 +122,14 @@ class FilePaths
     }
 
     /**
-     * Get an absolute path to a processing directory for the journal.
+     * Get an absolute path to a processing directory for the institution.
      *
      * @param string  $dirname
-     * @param Journal $journal
+     * @param Institution $institution
      *
      * @return string
      */
-    protected function absolutePath($dirname, Journal $journal = null)
+    protected function absolutePath($dirname, Institution $institution = null)
     {
         $path = $this->rootPath().'/'.$dirname;
         if (substr($dirname, -1) !== '/') {
@@ -138,16 +138,16 @@ class FilePaths
         if (!$this->fs->exists($path)) {
             $this->fs->mkdir($path);
         }
-        if ($journal !== null) {
-            return  $path.$journal->getUuid();
+        if ($institution !== null) {
+            return  $path.$institution->getUuid();
         }
 
         return realpath($path);
     }
 
-    public function getRestoreDir(Journal $journal)
+    public function getRestoreDir(Institution $institution)
     {
-        $path = $this->absolutePath('restore', $journal);
+        $path = $this->absolutePath('restore', $institution);
         if (!$this->fs->exists($path)) {
             $this->logger->notice("Creating directory {$path}");
             $this->fs->mkdir($path);
@@ -161,13 +161,13 @@ class FilePaths
      *
      * @see AppKernel#getRootDir
      *
-     * @param Journal $journal
+     * @param Institution $institution
      *
      * @return string
      */
-    final public function getHarvestDir(Journal $journal = null)
+    final public function getHarvestDir(Institution $institution = null)
     {
-        $path = $this->absolutePath('received', $journal);
+        $path = $this->absolutePath('received', $institution);
         if (!$this->fs->exists($path)) {
             $this->logger->notice("Creating directory {$path}");
             $this->fs->mkdir($path);
@@ -185,7 +185,7 @@ class FilePaths
      */
     final public function getHarvestFile(Deposit $deposit)
     {
-        $path = $this->getHarvestDir($deposit->getJournal());
+        $path = $this->getHarvestDir($deposit->getInstitution());
 
         return $path.'/'.$deposit->getFileName();
     }
@@ -193,13 +193,13 @@ class FilePaths
     /**
      * Get the processing directory.
      *
-     * @param Journal $journal
+     * @param Institution $institution
      *
      * @return string
      */
-    final public function getProcessingDir(Journal $journal)
+    final public function getProcessingDir(Institution $institution)
     {
-        $path = $this->absolutePath('processing', $journal);
+        $path = $this->absolutePath('processing', $institution);
         if (!$this->fs->exists($path)) {
             $this->logger->notice("Creating directory {$path}");
             $this->fs->mkdir($path);
@@ -217,7 +217,7 @@ class FilePaths
      */
     public function getProcessingBagPath(Deposit $deposit)
     {
-        $path = $this->getProcessingDir($deposit->getJournal());
+        $path = $this->getProcessingDir($deposit->getInstitution());
 
         return $path.'/'.$deposit->getDepositUuid();
     }
@@ -225,13 +225,13 @@ class FilePaths
     /**
      * Get the staging directory for processed deposits.
      *
-     * @param Journal $journal
+     * @param Institution $institution
      *
      * @return string
      */
-    final public function getStagingDir(Journal $journal)
+    final public function getStagingDir(Institution $institution)
     {
-        $path = $this->absolutePath('staged', $journal);
+        $path = $this->absolutePath('staged', $institution);
         if (!$this->fs->exists($path)) {
             $this->logger->notice("Creating directory {$path}");
             $this->fs->mkdir($path);
@@ -249,7 +249,7 @@ class FilePaths
      */
     final public function getStagingBagPath(Deposit $deposit)
     {
-        $path = $this->getStagingDir($deposit->getJournal());
+        $path = $this->getStagingDir($deposit->getInstitution());
 
         return $path.'/'.$deposit->getDepositUuid().'.zip';
     }

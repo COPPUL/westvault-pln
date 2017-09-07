@@ -20,7 +20,7 @@
 namespace AppBundle\Services;
 
 use AppBundle\Entity\Deposit;
-use AppBundle\Entity\Journal;
+use AppBundle\Entity\Institution;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\EntityManager;
@@ -120,7 +120,7 @@ class DepositBuilder
         return $this->router->getGenerator()->generate(
             'statement',
             array(
-                'journal_uuid' => $deposit->getJournal()->getUuid(),
+                'institution_uuid' => $deposit->getInstitution()->getUuid(),
                 'deposit_uuid' => $deposit->getDepositUuid(),
                 ),
             UrlGeneratorInterface::ABSOLUTE_URL
@@ -146,13 +146,13 @@ class DepositBuilder
     /**
      * Build a deposit from XML.
      *
-     * @param Journal          $journal
+     * @param Institution          $institution
      * @param SimpleXMLElement $xml
      * @param string           $action
      *
      * @return Deposit
      */
-    public function fromXml(Journal $journal, SimpleXMLElement $xml)
+    public function fromXml(Institution $institution, SimpleXMLElement $xml)
     {
         $id = $this->getXmlValue($xml, '//atom:id');
         $deposit_uuid = strtoupper(substr($id, 9, 36));
@@ -166,7 +166,7 @@ class DepositBuilder
             $deposit = new Deposit();
         }
         $deposit->setAction($action);
-        $deposit->setState('depositedByJournal');
+        $deposit->setState('depositedByInstitution');
         $deposit->setChecksumType($this->getXmlValue($xml, 'pkp:content/@checksumType'));
         $deposit->setChecksumValue($this->getXmlValue($xml, 'pkp:content/@checksumValue'));
         $deposit->setDepositUuid($deposit_uuid);
@@ -174,15 +174,15 @@ class DepositBuilder
         $deposit->setIssue($this->getXmlValue($xml, 'pkp:content/@issue'));
         $deposit->setVolume($this->getXmlValue($xml, 'pkp:content/@volume'));
         $deposit->setPubDate(new DateTime($this->getXmlValue($xml, 'pkp:content/@pubdate')));
-        $deposit->setJournal($journal);
+        $deposit->setInstitution($institution);
         $deposit->setSize($this->getXmlValue($xml, 'pkp:content/@size'));
         $deposit->setUrl(html_entity_decode($this->getXmlValue($xml, 'pkp:content')));
         $deposit->setDepositReceipt($this->buildDepositReceiptUrl($deposit));
         $ojsVersion = $this->getXmlValue($xml, 'pkp:content/@ojsVersion');
         if($ojsVersion) {
-            $deposit->setJournalVersion($ojsVersion);
+            $deposit->setInstitutionVersion($ojsVersion);
         } else {
-            $deposit->setJournalVersion(Deposit::DEFAULT_JOURNAL_VERSION);
+            $deposit->setInstitutionVersion(Deposit::DEFAULT_JOURNAL_VERSION);
         }
         
         $this->getLicensingInfo($deposit, $xml);
@@ -190,7 +190,7 @@ class DepositBuilder
         if ($action === 'add') {
             $deposit->addToProcessingLog('Deposit received.');
         } else {
-            $deposit->addToProcessingLog('Deposit edited or reset by journal manager.');
+            $deposit->addToProcessingLog('Deposit edited or reset by institution manager.');
         }
 
         $this->em->persist($deposit);

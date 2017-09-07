@@ -20,7 +20,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Deposit;
-use AppBundle\Entity\Journal;
+use AppBundle\Entity\Institution;
 use AppBundle\Entity\TermOfUse;
 use AppBundle\Exception\SwordException;
 use AppBundle\Utility\Namespaces;
@@ -86,28 +86,28 @@ class SwordController extends Controller
     }
 
     /**
-     * Check if a journal's uuid is whitelised or blacklisted. The rules are:.
+     * Check if a institution's uuid is whitelised or blacklisted. The rules are:.
      *
-     * If the journal uuid is whitelisted, return true
-     * If the journal uuid is blacklisted, return false
+     * If the institution uuid is whitelisted, return true
+     * If the institution uuid is blacklisted, return false
      * Return the pln_accepting parameter from parameters.yml
      *
-     * @param string $journal_uuid
+     * @param string $institution_uuid
      *
      * @return bool
      */
-    private function checkAccess($journal_uuid)
+    private function checkAccess($institution_uuid)
     {
         /* @var BlackWhitelist */
         $bw = $this->get('blackwhitelist');
-        $this->get('monolog.logger.sword')->info("Checking access for {$journal_uuid}");
-        if ($bw->isWhitelisted($journal_uuid)) {
-            $this->get('monolog.logger.sword')->info("whitelisted {$journal_uuid}");
+        $this->get('monolog.logger.sword')->info("Checking access for {$institution_uuid}");
+        if ($bw->isWhitelisted($institution_uuid)) {
+            $this->get('monolog.logger.sword')->info("whitelisted {$institution_uuid}");
 
             return true;
         }
-        if ($bw->isBlacklisted($journal_uuid)) {
-            $this->get('monolog.logger.sword')->notice("blacklisted {$journal_uuid}");
+        if ($bw->isBlacklisted($institution_uuid)) {
+            $this->get('monolog.logger.sword')->notice("blacklisted {$institution_uuid}");
 
             return false;
         }
@@ -116,45 +116,45 @@ class SwordController extends Controller
     }
 
     /**
-     * The journal with UUID $uuid has contacted the PLN. Add a record for the
-     * journal if there isn't one, otherwise update the timestamp.
+     * The institution with UUID $uuid has contacted the PLN. Add a record for the
+     * institution if there isn't one, otherwise update the timestamp.
      *
      * @param string $uuid
      * @param string $url
      *
-     * @return Journal
+     * @return Institution
      */
-    private function journalContact($uuid, $url)
+    private function institutionContact($uuid, $url)
     {
         $logger = $this->get('monolog.logger.sword');
         $em = $this->getDoctrine()->getManager();
-        $journalRepo = $em->getRepository('AppBundle:Journal');
-        $journal = $journalRepo->findOneBy(array(
+        $institutionRepo = $em->getRepository('AppBundle:Institution');
+        $institution = $institutionRepo->findOneBy(array(
             'uuid' => $uuid,
         ));
-        if ($journal !== null) {
-            $journal->setTimestamp();
-            if ($journal->getUrl() !== $url) {
-                $logger->warning("journal URL mismatch - {$uuid} - {$journal->getUrl()} - {$url}");
-                $journal->setUrl($url);
+        if ($institution !== null) {
+            $institution->setTimestamp();
+            if ($institution->getUrl() !== $url) {
+                $logger->warning("institution URL mismatch - {$uuid} - {$institution->getUrl()} - {$url}");
+                $institution->setUrl($url);
             }
         } else {
-            $journal = new Journal();
-            $journal->setUuid($uuid);
-            $journal->setUrl($url);
-            $journal->setTimestamp();
-            $journal->setTitle('unknown');
-            $journal->setIssn('unknown');
-            $journal->setStatus('new');
-            $journal->setEmail('unknown@unknown.com');
-            $em->persist($journal);
+            $institution = new Institution();
+            $institution->setUuid($uuid);
+            $institution->setUrl($url);
+            $institution->setTimestamp();
+            $institution->setTitle('unknown');
+            $institution->setIssn('unknown');
+            $institution->setStatus('new');
+            $institution->setEmail('unknown@unknown.com');
+            $em->persist($institution);
         }
-        if ($journal->getStatus() !== 'new') {
-            $journal->setStatus('healthy');
+        if ($institution->getStatus() !== 'new') {
+            $institution->setStatus('healthy');
         }
-        $em->flush($journal);
+        $em->flush($institution);
 
-        return $journal;
+        return $institution;
     }
 
     /**
@@ -177,16 +177,16 @@ class SwordController extends Controller
     /**
      * Figure out which message to return for the network status widget in OJS.
      *
-     * @param Journal $journal
+     * @param Institution $institution
      *
      * @return string
      */
-    private function getNetworkMessage(Journal $journal)
+    private function getNetworkMessage(Institution $institution)
     {
-        if ($journal->getOjsVersion() === null) {
+        if ($institution->getOjsVersion() === null) {
             return $this->container->getParameter('network_default');
         }
-        if (version_compare($journal->getOjsVersion(), $this->container->getParameter('min_ojs_version'), '>=')) {
+        if (version_compare($institution->getOjsVersion(), $this->container->getParameter('min_ojs_version'), '>=')) {
             return $this->container->getParameter('network_accepting');
         }
 
@@ -194,8 +194,8 @@ class SwordController extends Controller
     }
 
     /**
-     * Return a SWORD service document for a journal. Requires On-Behalf-Of
-     * and Journal-Url HTTP headers.
+     * Return a SWORD service document for a institution. Requires On-Behalf-Of
+     * and Institution-Url HTTP headers.
      *
      * @Route("/sd-iri", name="service_document")
      * @Method("GET")
@@ -210,7 +210,7 @@ class SwordController extends Controller
         $logger = $this->get('monolog.logger.sword');
 
         $obh = strtoupper($this->fetchHeader($request, 'On-Behalf-Of'));
-        $journalUrl = $this->fetchHeader($request, 'Journal-Url');
+        $institutionUrl = $this->fetchHeader($request, 'Institution-Url');
 
         $accepting = $this->checkAccess($obh);
         $acceptingLog = 'not accepting';
@@ -218,24 +218,24 @@ class SwordController extends Controller
             $acceptingLog = 'accepting';
         }
 
-        $logger->notice("service document - {$request->getClientIp()} - {$obh} - {$journalUrl} - {$acceptingLog}");
+        $logger->notice("service document - {$request->getClientIp()} - {$obh} - {$institutionUrl} - {$acceptingLog}");
         if (!$obh) {
-            throw new SwordException(400, "Missing On-Behalf-Of header for {$journalUrl}");
+            throw new SwordException(400, "Missing On-Behalf-Of header for {$institutionUrl}");
         }
-        if (!$journalUrl) {
-            throw new SwordException(400, "Missing Journal-Url header for {$obh}");
+        if (!$institutionUrl) {
+            throw new SwordException(400, "Missing Institution-Url header for {$obh}");
         }
 
-        $journal = $this->journalContact($obh, $journalUrl);
+        $institution = $this->institutionContact($obh, $institutionUrl);
 
         /* @var Response */
         $response = $this->render('AppBundle:Sword:serviceDocument.xml.twig', array(
             'onBehalfOf' => $obh,
             'accepting' => $accepting ? 'Yes' : 'No',
-            'message' => $this->getNetworkMessage($journal),
+            'message' => $this->getNetworkMessage($institution),
             'colIri' => $this->generateUrl(
                 'create_deposit',
-                array('journal_uuid' => $obh),
+                array('institution_uuid' => $obh),
                 UrlGeneratorInterface::ABSOLUTE_URL
             ),
             'terms' => $this->getTermsOfUse(),
@@ -249,46 +249,46 @@ class SwordController extends Controller
     /**
      * Create a deposit.
      *
-     * @Route("/col-iri/{journal_uuid}", name="create_deposit")
+     * @Route("/col-iri/{institution_uuid}", name="create_deposit")
      * @Method("POST")
      *
      * @param Request $request
-     * @param string  $journal_uuid
+     * @param string  $institution_uuid
      *
      * @return Response
      */
-    public function createDepositAction(Request $request, $journal_uuid)
+    public function createDepositAction(Request $request, $institution_uuid)
     {
         /* @var LoggerInterface */
         $logger = $this->get('monolog.logger.sword');
-        $journal_uuid = strtoupper($journal_uuid);
-        $accepting = $this->checkAccess($journal_uuid);
+        $institution_uuid = strtoupper($institution_uuid);
+        $accepting = $this->checkAccess($institution_uuid);
         $acceptingLog = 'not accepting';
         if ($accepting) {
             $acceptingLog = 'accepting';
         }
 
-        $logger->notice("create deposit - {$request->getClientIp()} - {$journal_uuid} - {$acceptingLog}");
+        $logger->notice("create deposit - {$request->getClientIp()} - {$institution_uuid} - {$acceptingLog}");
         if (!$accepting) {
             throw new SwordException(400, 'Not authorized to create deposits.');
         }
 
-        if ($this->checkAccess($journal_uuid) === false) {
-            $logger->notice("create deposit [Not Authorized] - {$request->getClientIp()} - {$journal_uuid}");
+        if ($this->checkAccess($institution_uuid) === false) {
+            $logger->notice("create deposit [Not Authorized] - {$request->getClientIp()} - {$institution_uuid}");
             throw new SwordException(400, 'Not authorized to make deposits.');
         }
 
         $xml = $this->parseXml($request->getContent());
         try {
-            $journal = $this->get('journalbuilder')->fromXml($xml, $journal_uuid);
-            $journal->setStatus('healthy');
-            $deposit = $this->get('depositbuilder')->fromXml($journal, $xml);
+            $institution = $this->get('institutionbuilder')->fromXml($xml, $institution_uuid);
+            $institution->setStatus('healthy');
+            $deposit = $this->get('depositbuilder')->fromXml($institution, $xml);
         } catch (\Exception $e) {
             throw new SwordException(500, $e->getMessage(), $e);
         }
 
         /* @var Response */
-        $response = $this->statementAction($request, $journal->getUuid(), $deposit->getDepositUuid());
+        $response = $this->statementAction($request, $institution->getUuid(), $deposit->getDepositUuid());
         $response->headers->set(
             'Location',
             $deposit->getDepositReceipt(),
@@ -302,27 +302,27 @@ class SwordController extends Controller
     /**
      * Check that status of a deposit by fetching the sword statemt.
      *
-     * @Route("/cont-iri/{journal_uuid}/{deposit_uuid}/state", name="statement")
+     * @Route("/cont-iri/{institution_uuid}/{deposit_uuid}/state", name="statement")
      * @Method("GET")
      *
      * @param Request $request
-     * @param string  $journal_uuid
+     * @param string  $institution_uuid
      * @param string  $deposit_uuid
      *
      * @return Response
      */
-    public function statementAction(Request $request, $journal_uuid, $deposit_uuid)
+    public function statementAction(Request $request, $institution_uuid, $deposit_uuid)
     {
         /* @var LoggerInterface */
         $logger = $this->get('monolog.logger.sword');
-        $journal_uuid = strtoupper($journal_uuid);
-        $accepting = $this->checkAccess($journal_uuid);
+        $institution_uuid = strtoupper($institution_uuid);
+        $accepting = $this->checkAccess($institution_uuid);
         $acceptingLog = 'not accepting';
         if ($accepting) {
             $acceptingLog = 'accepting';
         }
 
-        $logger->notice("statement - {$request->getClientIp()} - {$journal_uuid} - {$acceptingLog}");
+        $logger->notice("statement - {$request->getClientIp()} - {$institution_uuid} - {$acceptingLog}");
 
         if (!$accepting && !$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw new SwordException(400, 'Not authorized to request statements.');
@@ -330,10 +330,10 @@ class SwordController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
-        /* @var Journal */
-        $journal = $em->getRepository('AppBundle:Journal')->findOneBy(array('uuid' => $journal_uuid));
-        if ($journal === null) {
-            throw new SwordException(400, 'Journal UUID not found.');
+        /* @var Institution */
+        $institution = $em->getRepository('AppBundle:Institution')->findOneBy(array('uuid' => $institution_uuid));
+        if ($institution === null) {
+            throw new SwordException(400, 'Institution UUID not found.');
         }
 
         /* @var Deposit */
@@ -342,12 +342,12 @@ class SwordController extends Controller
             throw new SwordException(400, 'Deposit UUID not found.');
         }
 
-        if ($journal->getId() !== $deposit->getJournal()->getId()) {
-            throw new SwordException(400, 'Deposit does not belong to journal.');
+        if ($institution->getId() !== $deposit->getInstitution()->getId()) {
+            throw new SwordException(400, 'Deposit does not belong to institution.');
         }
 
-        $journal->setContacted(new DateTime());
-        $journal->setStatus('healthy');
+        $institution->setContacted(new DateTime());
+        $institution->setStatus('healthy');
         $em->flush();
 
         /* @var Response */
@@ -362,40 +362,40 @@ class SwordController extends Controller
     /**
      * Edit a deposit with an HTTP PUT.
      *
-     * @Route("/cont-iri/{journal_uuid}/{deposit_uuid}/edit")
+     * @Route("/cont-iri/{institution_uuid}/{deposit_uuid}/edit")
      * @Method("PUT")
      *
      * @param Request $request
-     * @param string  $journal_uuid
+     * @param string  $institution_uuid
      * @param string  $deposit_uuid
      *
      * @return Response
      */
-    public function editAction(Request $request, $journal_uuid, $deposit_uuid)
+    public function editAction(Request $request, $institution_uuid, $deposit_uuid)
     {
         /* @var LoggerInterface */
         $logger = $this->get('monolog.logger.sword');
-        $journal_uuid = strtoupper($journal_uuid);
+        $institution_uuid = strtoupper($institution_uuid);
         $deposit_uuid = strtoupper($deposit_uuid);
-        $accepting = $this->checkAccess($journal_uuid);
+        $accepting = $this->checkAccess($institution_uuid);
         $acceptingLog = 'not accepting';
         if ($accepting) {
             $acceptingLog = 'accepting';
         }
 
-        $logger->notice("edit deposit - {$request->getClientIp()} - {$journal_uuid} - {$acceptingLog}");
+        $logger->notice("edit deposit - {$request->getClientIp()} - {$institution_uuid} - {$acceptingLog}");
         if (!$accepting) {
             throw new SwordException(400, 'Not authorized to edit deposits.');
         }
 
         $em = $this->getDoctrine()->getManager();
 
-        /** @var Journal $journal */
-        $journal = $em->getRepository('AppBundle:Journal')->findOneBy(array(
-            'uuid' => $journal_uuid,
+        /** @var Institution $institution */
+        $institution = $em->getRepository('AppBundle:Institution')->findOneBy(array(
+            'uuid' => $institution_uuid,
         ));
-        if ($journal === null) {
-            throw new SwordException(400, 'Journal UUID not found.');
+        if ($institution === null) {
+            throw new SwordException(400, 'Institution UUID not found.');
         }
 
         /** @var Deposit $deposit */
@@ -406,17 +406,17 @@ class SwordController extends Controller
             throw new SwordException(400, "Deposit UUID {$deposit_uuid} not found.");
         }
 
-        if ($journal->getId() !== $deposit->getJournal()->getId()) {
-            throw new SwordException(400, 'Deposit does not belong to journal.');
+        if ($institution->getId() !== $deposit->getInstitution()->getId()) {
+            throw new SwordException(400, 'Deposit does not belong to institution.');
         }
 
-        $journal->setContacted(new DateTime());
-        $journal->setStatus('healthy');
+        $institution->setContacted(new DateTime());
+        $institution->setStatus('healthy');
         $xml = $this->parseXml($request->getContent());
-        $newDeposit = $this->get('depositbuilder')->fromXml($journal, $xml);
+        $newDeposit = $this->get('depositbuilder')->fromXml($institution, $xml);
 
         /* @var Response */
-        $response = $this->statementAction($request, $journal_uuid, $deposit_uuid);
+        $response = $this->statementAction($request, $institution_uuid, $deposit_uuid);
         $response->headers->set(
             'Location',
             $newDeposit->getDepositReceipt(),

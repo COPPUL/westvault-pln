@@ -2,16 +2,16 @@
 
 
 {% block pageheader %}
-    <h1>Journal</h1>
+    <h1>Institution</h1>
 {% endblock %}
 
 {% block body -%}
     <div class="btn-toolbar">
         <div class="btn-group pull-right">
-            <a href="{{ path('journal_show', {'id': entity.id}) }}" class="btn btn-default">
+            <a href="{{ path('institution_show', {'id': entity.id}) }}" class="btn btn-default">
                 <span class="glyphicon glyphicon-arrow-left"></span> Back
             </a>
-            <a href="{{ path('journal_ping', {'id': entity.id}) }}" class="btn btn-default ping">
+            <a href="{{ path('institution_ping', {'id': entity.id}) }}" class="btn btn-default ping">
                 <span class="glyphicon glyphicon-refresh"></span> Ping
             </a>
         </div>
@@ -50,8 +50,8 @@
 		<dd>{{ ping.isPluginCurrent() }}</dd>
 		<dt>Terms accepted</dt>
 		<dd>{{ ping.areTermsAccepted() }}</dd>		
-		<dt>Journal Title</dt>
-		<dd>{{ ping.getJournalTitle() }}</dd>
+		<dt>Institution Title</dt>
+		<dd>{{ ping.getInstitutionTitle() }}</dd>
 		<dt>Article Count</dt>
 		<dd>{{ ping.getArticleCount() }}</dd>
 		<dt>Recent Articles</dt>

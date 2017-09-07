@@ -41,7 +41,7 @@
                         <th>Uuid</th>
                         <th>Received</th>
                         <th>Action</th>
-                        <th>Journal</th>
+                        <th>Institution</th>
                         <th>Volume</th>
                         <th>Issue</th>
                         <th>Size</th>
@@ -57,7 +57,7 @@
                             <td><a href="{{ path('deposit_show', { 'id': entity.id }) }}">{{ entity.deposituuid }}</a></td>
                             <td>{% if entity.received %}{{ entity.received|date('Y-m-d') }}{% endif %}</td>
                             <td>{{ entity.action }}</td>
-                            <td><a href="{{ path('journal_show', {'id': entity.journal.id}) }}">{{ entity.journal.title }}</a></td>
+                            <td><a href="{{ path('institution_show', {'id': entity.institution.id}) }}">{{ entity.institution.title }}</a></td>
                             <td>{{ entity.volume }}</td>
                             <td>{{ entity.issue }}</td>
                             <td>{{ entity.size }}</td>

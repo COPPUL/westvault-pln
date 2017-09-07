@@ -57,11 +57,11 @@ class WhitelistController extends Controller
             $request->query->getInt('page', 1),
             25
         );
-        $journalRepo = $em->getRepository('AppBundle:Journal');
+        $institutionRepo = $em->getRepository('AppBundle:Institution');
 
         return array(
             'entities' => $entities,
-            'repo' => $journalRepo,
+            'repo' => $institutionRepo,
         );
     }
 
@@ -195,7 +195,7 @@ class WhitelistController extends Controller
             throw $this->createNotFoundException('Unable to find Whitelist entity.');
         }
 
-        $journal = $em->getRepository('AppBundle:Journal')->findOneBy(array(
+        $institution = $em->getRepository('AppBundle:Institution')->findOneBy(array(
             'uuid' => $entity->getUuid(),
         ));
 
@@ -203,7 +203,7 @@ class WhitelistController extends Controller
 
         return array(
             'entity' => $entity,
-            'journal' => $journal,
+            'institution' => $institution,
             'delete_form' => $deleteForm->createView(),
         );
     }

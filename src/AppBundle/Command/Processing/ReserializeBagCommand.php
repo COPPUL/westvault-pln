@@ -56,14 +56,14 @@ class ReserializeBagCommand extends AbstractProcessingCmd
         $bag->setBagInfoData('PKP-PLN-Deposit-Issue', $deposit->getIssue());
         $bag->setBagInfoData('PKP-PLN-Deposit-PubDate', $deposit->getPubDate()->format('c'));
 
-        $journal = $deposit->getJournal();
-        $bag->setBagInfoData('PKP-PLN-Journal-UUID', $journal->getUuid());
-        $bag->setBagInfoData('PKP-PLN-Journal-Title', $journal->getTitle());
-        $bag->setBagInfoData('PKP-PLN-Journal-ISSN', $journal->getIssn());
-        $bag->setBagInfoData('PKP-PLN-Journal-URL', $journal->getUrl());
-        $bag->setBagInfoData('PKP-PLN-Journal-Email', $journal->getEmail());
-        $bag->setBagInfoData('PKP-PLN-Publisher-Name', $journal->getPublisherName());
-        $bag->setBagInfoData('PKP-PLN-Publisher-URL', $journal->getPublisherUrl());
+        $institution = $deposit->getInstitution();
+        $bag->setBagInfoData('PKP-PLN-Institution-UUID', $institution->getUuid());
+        $bag->setBagInfoData('PKP-PLN-Institution-Title', $institution->getTitle());
+        $bag->setBagInfoData('PKP-PLN-Institution-ISSN', $institution->getIssn());
+        $bag->setBagInfoData('PKP-PLN-Institution-URL', $institution->getUrl());
+        $bag->setBagInfoData('PKP-PLN-Institution-Email', $institution->getEmail());
+        $bag->setBagInfoData('PKP-PLN-Publisher-Name', $institution->getPublisherName());
+        $bag->setBagInfoData('PKP-PLN-Publisher-URL', $institution->getPublisherUrl());
 
         foreach ($deposit->getLicense() as $key => $value) {
             $bag->setBagInfoData('PKP-PLN-'.$key, $value);

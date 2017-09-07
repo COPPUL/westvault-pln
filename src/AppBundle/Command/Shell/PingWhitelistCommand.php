@@ -19,7 +19,7 @@
 
 namespace AppBundle\Command\Shell;
 
-use AppBundle\Entity\Journal;
+use AppBundle\Entity\Institution;
 use AppBundle\Entity\Whitelist;
 use AppBundle\Services\Ping;
 use Exception;
@@ -33,7 +33,7 @@ use Symfony\Component\HttpKernel\Tests\Logger;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
- * Ping all the journals in the database and whitelist those that respond and
+ * Ping all the institutions in the database and whitelist those that respond and
  * that are running a sufficiently recent version of OJS.
  */
 class PingWhitelistCommand extends ContainerAwareCommand
@@ -54,7 +54,7 @@ class PingWhitelistCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this->setName('pln:ping-whitelist');
-        $this->setDescription('Find journals running a sufficiently new version of OJS and whitelist them.');
+        $this->setDescription('Find institutions running a sufficiently new version of OJS and whitelist them.');
         $this->addArgument('minVersion', InputArgument::OPTIONAL, 'Minimum version required to whitelist.');
         $this->addOption(
             'dry-run',
@@ -66,7 +66,7 @@ class PingWhitelistCommand extends ContainerAwareCommand
             'all',
             'a',
             InputOption::VALUE_NONE,
-            'Ping all journals, including whitelisted/blacklisted.'
+            'Ping all institutions, including whitelisted/blacklisted.'
         );
         parent::configure();
     }
@@ -99,59 +99,59 @@ class PingWhitelistCommand extends ContainerAwareCommand
         $ping->setLogger($this->logger);
 
         /*
-         * @var Journal[]
+         * @var Institution[]
          */
-        $journals = $em->getRepository('AppBundle:Journal')->findAll();
+        $institutions = $em->getRepository('AppBundle:Institution')->findAll();
         $minVersion = $input->getArgument('minVersion');
         if (!$minVersion) {
             $minVersion = $this->getContainer()->getParameter('min_ojs_version');
         }
         $all = $input->getOption('all');
 
-        $count = count($journals);
+        $count = count($institutions);
         $i = 0;
 
-        foreach ($journals as $journal) {
+        foreach ($institutions as $institution) {
             ++$i;
             $fmt = sprintf('%5d', $i);
 
-            $url = $router->generate('journal_show', array('id' => $journal->getId()), UrlGeneratorInterface::ABSOLUTE_URL);
-            $uuid = $journal->getUuid();
-            if (!$all && $journal->getStatus() === 'ping-error') {
-                $this->logger->notice("{$fmt}/{$count} - skipped (previous ping-error) - - {$journal->getUrl()}");
+            $url = $router->generate('institution_show', array('id' => $institution->getId()), UrlGeneratorInterface::ABSOLUTE_URL);
+            $uuid = $institution->getUuid();
+            if (!$all && $institution->getStatus() === 'ping-error') {
+                $this->logger->notice("{$fmt}/{$count} - skipped (previous ping-error) - - {$institution->getUrl()}");
                 continue;
             }
 
             if (!$all && $bwlist->isWhitelisted($uuid)) {
-                $this->logger->notice("{$fmt}/{$count} - skipped (whitelisted) - - {$journal->getUrl()}");
+                $this->logger->notice("{$fmt}/{$count} - skipped (whitelisted) - - {$institution->getUrl()}");
                 continue;
             }
             if (!$all && $bwlist->isBlacklisted($uuid)) {
-                $this->logger->notice("{$fmt}/{$count} - skipped (blacklisted) - - {$journal->getUrl()}");
+                $this->logger->notice("{$fmt}/{$count} - skipped (blacklisted) - - {$institution->getUrl()}");
                 continue;
             }
 
             try {
-                $response = $ping->ping($journal);
+                $response = $ping->ping($institution);
             } catch (Exception $e) {
-                $this->logger->error("Ping - HTTP ERROR: {$e->getMessage()} - {$journal->getUrl()} - {$url}");
-                $journal->setStatus('ping-error');
-                $em->flush($journal);
+                $this->logger->error("Ping - HTTP ERROR: {$e->getMessage()} - {$institution->getUrl()} - {$url}");
+                $institution->setStatus('ping-error');
+                $em->flush($institution);
                 continue;
             }
             if ($response->getHttpStatus() !== 200) {
-                $this->logger->error("Ping - HTTP {$response->getHttpStatus()} - - {$journal->getUrl()} - {$url} - {$response->getError()}");
-                $journal->setStatus('ping-error');
-                $em->flush($journal);
+                $this->logger->error("Ping - HTTP {$response->getHttpStatus()} - - {$institution->getUrl()} - {$url} - {$response->getError()}");
+                $institution->setStatus('ping-error');
+                $em->flush($institution);
                 continue;
             }
             if (!$response->getOjsRelease()) {
-                $this->logger->warning("Ping - HTTP {$response->getHttpStatus()} - no version number found - {$journal->getUrl()} - {$url}");
-                $journal->setStatus('ping-error');
-                $em->flush($journal);
+                $this->logger->warning("Ping - HTTP {$response->getHttpStatus()} - no version number found - {$institution->getUrl()} - {$url}");
+                $institution->setStatus('ping-error');
+                $em->flush($institution);
                 continue;
             }
-            $this->logger->notice("Ping - {$response->getHttpStatus()} - {$response->getOjsRelease()} - {$journal->getUrl()} - {$url}");
+            $this->logger->notice("Ping - {$response->getHttpStatus()} - {$response->getOjsRelease()} - {$institution->getUrl()} - {$url}");
 
             if (version_compare($response->getOjsRelease(), $minVersion, '<')) {
                 continue;
@@ -163,8 +163,8 @@ class PingWhitelistCommand extends ContainerAwareCommand
                 continue;
             }
             $whitelist = new Whitelist();
-            $whitelist->setUuid($journal->getUuid());
-            $whitelist->setComment("{$journal->getUrl()} added automatically by ping-whitelist command.");
+            $whitelist->setUuid($institution->getUuid());
+            $whitelist->setComment("{$institution->getUrl()} added automatically by ping-whitelist command.");
             $em->persist($whitelist);
             $em->flush();
         }

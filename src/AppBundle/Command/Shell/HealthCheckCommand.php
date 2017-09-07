@@ -19,7 +19,7 @@
 
 namespace AppBundle\Command\Shell;
 
-use AppBundle\Entity\Journal;
+use AppBundle\Entity\Institution;
 use AppBundle\Services\Ping;
 use AppUserBundle\Entity\User;
 use DateTime;
@@ -36,7 +36,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Tests\Logger;
 
 /**
- * Ping all the journals that haven't contacted the PLN in a while, and send
+ * Ping all the institutions that haven't contacted the PLN in a while, and send
  * notifications to interested users.
  */
 class HealthCheckCommand extends ContainerAwareCommand
@@ -62,12 +62,12 @@ class HealthCheckCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this->setName('pln:health:check');
-        $this->setDescription('Find journals that have gone silent.');
+        $this->setDescription('Find institutions that have gone silent.');
         $this->addOption(
             'dry-run',
             'd',
             InputOption::VALUE_NONE,
-            'Do not update journal status'
+            'Do not update institution status'
         );
         parent::configure();
     }
@@ -90,12 +90,12 @@ class HealthCheckCommand extends ContainerAwareCommand
      *
      * @param int       $days
      * @param User[]    $users
-     * @param Journal[] $journals
+     * @param Institution[] $institutions
      */
-    protected function sendNotifications($days, $users, $journals)
+    protected function sendNotifications($days, $users, $institutions)
     {
         $notification = $this->templating->render('AppBundle:HealthCheck:notification.txt.twig', array(
-            'journals' => $journals,
+            'institutions' => $institutions,
             'days' => $days,
         ));
         $mailer = $this->getContainer()->get('mailer');
@@ -113,19 +113,19 @@ class HealthCheckCommand extends ContainerAwareCommand
     }
 
     /**
-     * Request a ping from a journal.
+     * Request a ping from a institution.
      *
      * @todo Use the Ping service
      *
-     * @param Journal $journal
+     * @param Institution $institution
      *
      * @return bool
      */
-    protected function pingJournal(Journal $journal)
+    protected function pingInstitution(Institution $institution)
     {
         $client = new Client();
         try {
-            $response = $client->get($journal->getGatewayUrl());
+            $response = $client->get($institution->getGatewayUrl());
             if ($response->getStatusCode() !== 200) {
                 return false;
             }
@@ -135,12 +135,12 @@ class HealthCheckCommand extends ContainerAwareCommand
                 return true;
             }
         } catch (RequestException $e) {
-            $this->logger->error("Cannot ping {$journal->getUrl()}: {$e->getMessage()}");
+            $this->logger->error("Cannot ping {$institution->getUrl()}: {$e->getMessage()}");
             if ($e->hasResponse()) {
                 $this->logger->error($e->getResponse()->getStatusCode().' '.$this->logger->error($e->getResponse()->getReasonPhrase()));
             }
         } catch (XmlParseException $e) {
-            $this->logger->error("Cannot parse journal ping response {$journal->getUrl()}: {$e->getMessage()}");
+            $this->logger->error("Cannot parse institution ping response {$institution->getUrl()}: {$e->getMessage()}");
         }
 
         return false;
@@ -156,10 +156,10 @@ class HealthCheckCommand extends ContainerAwareCommand
     {
         $em = $this->getContainer()->get('doctrine')->getManager();
         $days = $this->getContainer()->getParameter('days_silent');
-        $journals = $em->getRepository('AppBundle:Journal')->findSilent($days);
-        $count = count($journals);
-        $this->logger->notice("Found {$count} silent journals.");
-        if (count($journals) === 0) {
+        $institutions = $em->getRepository('AppBundle:Institution')->findSilent($days);
+        $count = count($institutions);
+        $this->logger->notice("Found {$count} silent institutions.");
+        if (count($institutions) === 0) {
             return;
         }
 
@@ -169,16 +169,16 @@ class HealthCheckCommand extends ContainerAwareCommand
 
             return;
         }
-        $this->sendNotifications($days, $users, $journals);
+        $this->sendNotifications($days, $users, $institutions);
 
-        foreach ($journals as $journal) {
-            if ($this->pingJournal($journal)) {
-                $this->logger->notice("Ping Success {$journal->getUrl()})");
-                $journal->setStatus('healthy');
-                $journal->setContacted(new DateTime());
+        foreach ($institutions as $institution) {
+            if ($this->pingInstitution($institution)) {
+                $this->logger->notice("Ping Success {$institution->getUrl()})");
+                $institution->setStatus('healthy');
+                $institution->setContacted(new DateTime());
             } else {
-                $journal->setStatus('unhealthy');
-                $journal->setNotified(new DateTime());
+                $institution->setStatus('unhealthy');
+                $institution->setNotified(new DateTime());
             }
         }
 

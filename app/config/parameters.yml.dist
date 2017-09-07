@@ -46,9 +46,6 @@ parameters:
     # Default locale for terms of use
     terms_of_use_default_locale: 'en-US'
 
-    # Number of days a journal can go without contacting the PLN and sill be healthy
-    days_silent: 60
-
     # override the command-line router URL generator.    
     router.request_context.host: pkppln.dev
     router.request_context.scheme: http
@@ -59,9 +56,7 @@ parameters:
     save_deposit_xml: false
 
     # customize the network message.
-    min_ojs_version: 2.4.8.0
     network_accepting: The PKP PLN can accept deposits from this journal.
-    network_oldojs: This journal must be running OJS 2.4.8 to make deposits to the PKP PLN.
     network_default: The PKP PLN does not know about this journal yet.
 
     # remove completed deposits, once LOCKSSOMatic reports 100% agreement.

@@ -25,18 +25,18 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\Expr\Func;
 
 /**
- * JournalRepository.
+ * InstitutionRepository.
  *
- * This class adds a simple journal search and a few other easy queries.
+ * This class adds a simple institution search and a few other easy queries.
  */
-class JournalRepository extends EntityRepository
+class InstitutionRepository extends EntityRepository
 {
     /**
-     * Search for a journal by title, uuid, issn, url, email, or publisher.
+     * Search for a institution by title, uuid, issn, url, email, or publisher.
      *
      * @param string $q
      *
-     * @return Collection|Journal[]
+     * @return Collection|Institution[]
      */
     public function search($q)
     {
@@ -58,17 +58,17 @@ class JournalRepository extends EntityRepository
             )
         );
         $query = $qb->getQuery();
-        $journals = $query->getResult();
+        $institutions = $query->getResult();
 
-        return $journals;
+        return $institutions;
     }
 
     /**
-     * Find journals by status.
+     * Find institutions by status.
      *
      * @param string $status
      *
-     * @return Collection|Journal[]
+     * @return Collection|Institution[]
      */
     public function findByStatus($status)
     {
@@ -78,7 +78,7 @@ class JournalRepository extends EntityRepository
     }
 
     /**
-     * Summarize the journal statuses, counting them by status.
+     * Summarize the institution statuses, counting them by status.
      *
      * @return array
      */
@@ -93,11 +93,11 @@ class JournalRepository extends EntityRepository
     }
 
     /**
-     * Find journals that haven't contacted the PLN in $days.
+     * Find institutions that haven't contacted the PLN in $days.
      *
      * @param int $days
      *
-     * @return Collection|Journal[]
+     * @return Collection|Institution[]
      */
     public function findSilent($days)
     {
@@ -111,12 +111,12 @@ class JournalRepository extends EntityRepository
     }
 
     /**
-     * Find journals that have gone silent and that notifications have been sent
+     * Find institutions that have gone silent and that notifications have been sent
      * for, but they have not been updated yet.
      *
      * @param int $days
      *
-     * @return Collection|Journal[]
+     * @return Collection|Institution[]
      */
     public function findOverdue($days)
     {
@@ -130,11 +130,11 @@ class JournalRepository extends EntityRepository
 
     /**
      * @todo This method should be called findRecent(). It does not find
-     * journals with status=new
+     * institutions with status=new
      *
      * @param type $limit
      *
-     * @return Collection|Journal[]
+     * @return Collection|Institution[]
      */
     public function findNew($limit = 5)
     {

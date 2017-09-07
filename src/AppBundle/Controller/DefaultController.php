@@ -57,12 +57,12 @@ class DefaultController extends Controller
             return $this->render('AppBundle:Default:indexAnon.html.twig');
         }
 
-        $journalRepo = $em->getRepository('AppBundle:Journal');
+        $institutionRepo = $em->getRepository('AppBundle:Institution');
         $depositRepo = $em->getRepository('AppBundle:Deposit');
 
         return $this->render('AppBundle:Default:indexUser.html.twig', array(
-                'journals_new' => $journalRepo->findNew(),
-                'journal_summary' => $journalRepo->statusSummary(),
+                'institutions_new' => $institutionRepo->findNew(),
+                'institution_summary' => $institutionRepo->statusSummary(),
                 'deposits_new' => $depositRepo->findNew(),
                 'deposit_summary' => $depositRepo->stateSummary(),
         ));
@@ -128,36 +128,36 @@ class DefaultController extends Controller
     /**
      * Fetch a processed and packaged deposit.
      *
-     * @Route("/fetch/{journalUuid}/{depositUuid}.zip", name="fetch")
+     * @Route("/fetch/{institutionUuid}/{depositUuid}.zip", name="fetch")
      *
      * @param Request $request
-     * @param string  $journalUuid
+     * @param string  $institutionUuid
      * @param string  $depositUuid
      *
      * @return BinaryFileResponse
      */
-    public function fetchAction(Request $request, $journalUuid, $depositUuid)
+    public function fetchAction(Request $request, $institutionUuid, $depositUuid)
     {
-        $journalUuid = strtoupper($journalUuid);
+        $institutionUuid = strtoupper($institutionUuid);
         $depositUuid = strtoupper($depositUuid);
         $logger = $this->get('monolog.logger.lockss');
-        $logger->notice("fetch - {$request->getClientIp()} - {$journalUuid} - {$depositUuid}");
+        $logger->notice("fetch - {$request->getClientIp()} - {$institutionUuid} - {$depositUuid}");
         $em = $this->container->get('doctrine');
-        $journal = $em->getRepository('AppBundle:Journal')->findOneBy(array('uuid' => $journalUuid));
+        $institution = $em->getRepository('AppBundle:Institution')->findOneBy(array('uuid' => $institutionUuid));
         $deposit = $em->getRepository('AppBundle:Deposit')->findOneBy(array('depositUuid' => $depositUuid));
         if (!$deposit) {
-            $logger->error("fetch - 404 DEPOSIT NOT FOUND - {$request->getClientIp()} - {$journalUuid} - {$depositUuid}");
-            throw new NotFoundHttpException("{$journalUuid}/{$depositUuid}.zip does not exist.");
+            $logger->error("fetch - 404 DEPOSIT NOT FOUND - {$request->getClientIp()} - {$institutionUuid} - {$depositUuid}");
+            throw new NotFoundHttpException("{$institutionUuid}/{$depositUuid}.zip does not exist.");
         }
-        if ($deposit->getJournal()->getId() !== $journal->getId()) {
-            $logger->error("fetch - 400 JOURNAL MISMATCH - {$request->getClientIp()} - {$journalUuid} - {$depositUuid}");
-            throw new BadRequestHttpException("The requested Journal ID does not match the deposit's journal ID.");
+        if ($deposit->getInstitution()->getId() !== $institution->getId()) {
+            $logger->error("fetch - 400 JOURNAL MISMATCH - {$request->getClientIp()} - {$institutionUuid} - {$depositUuid}");
+            throw new BadRequestHttpException("The requested Institution ID does not match the deposit's institution ID.");
         }
         $path = $this->get('filepaths')->getStagingBagPath($deposit);
         $fs = new Filesystem();
         if (!$fs->exists($path)) {
-            $logger->error("fetch - 404 PACKAGE NOT FOUND - {$request->getClientIp()} - {$journalUuid} - {$depositUuid}");
-            throw new NotFoundHttpException("{$journalUuid}/{$depositUuid}.zip does not exist.");
+            $logger->error("fetch - 404 PACKAGE NOT FOUND - {$request->getClientIp()} - {$institutionUuid} - {$depositUuid}");
+            throw new NotFoundHttpException("{$institutionUuid}/{$depositUuid}.zip does not exist.");
         }
 
         return new BinaryFileResponse($path);

@@ -20,7 +20,7 @@
 namespace AppBundle\Services;
 
 use AppBundle\Entity\Deposit;
-use AppBundle\Entity\Journal;
+use AppBundle\Entity\Institution;
 use AppBundle\Utility\Namespaces;
 use DateTime;
 use Exception;
@@ -108,12 +108,12 @@ class SwordClient
     private $client;
 
     /**
-     * All PKP PLN journals are given the same title in LOCKSS/LOCKSSOMatic to
+     * All PKP PLN institutions are given the same title in LOCKSS/LOCKSSOMatic to
      * enable use of the LOCKSS subscription manager.
      *
      * @var type
      */
-    private $plnJournalTitle;
+    private $plnInstitutionTitle;
 
     /**
      * @var FilePaths
@@ -167,13 +167,13 @@ class SwordClient
     }
 
     /**
-     * Set the PLN Journal Title.
+     * Set the PLN Institution Title.
      *
-     * @param string $plnJournalTitle
+     * @param string $plnInstitutionTitle
      */
-    public function setPlnJournalTitle($plnJournalTitle)
+    public function setPlnInstitutionTitle($plnInstitutionTitle)
     {
-        $this->plnJournalTitle = $plnJournalTitle;
+        $this->plnInstitutionTitle = $plnInstitutionTitle;
     }
 
     /**
@@ -231,16 +231,16 @@ class SwordClient
     /**
      * Fetch the service document by HTTP.
      *
-     * @param Journal $journal
+     * @param Institution $institution
      *
      * @throws RequestException
      */
-    public function serviceDocument(Journal $journal)
+    public function serviceDocument(Institution $institution)
     {
         $client = $this->getClient();
         $headers = array(
             'On-Behalf-Of' => $this->serverUuid,
-            'Journal-Url' => $journal->getUrl(),
+            'Institution-Url' => $institution->getUrl(),
         );
         try {
             $response = $client->get($this->sdIri, ['headers' => $headers]);
@@ -270,16 +270,16 @@ class SwordClient
      */
     public function createDeposit(Deposit $deposit)
     {
-        $this->serviceDocument($deposit->getJournal());
+        $this->serviceDocument($deposit->getInstitution());
         $xml = $this->templating->render('AppBundle:SwordClient:deposit.xml.twig', array(
             'title' => 'Deposit from OJS part '.$deposit->getAuContainer()->getId(),
             'publisher' => 'Public Knowledge Project Staging Server',
             'deposit' => $deposit,
             'baseUri' => $this->router->generate('home', array(), UrlGeneratorInterface::ABSOLUTE_URL),
-            'plnJournalTitle' => $this->plnJournalTitle,
+            'plnInstitutionTitle' => $this->plnInstitutionTitle,
         ));
         if ($this->saveDepositXml) {
-            $atomPath = $this->filePaths->getStagingDir($deposit->getJournal()).'/'.$deposit->getDepositUuid().'.xml';
+            $atomPath = $this->filePaths->getStagingDir($deposit->getInstitution()).'/'.$deposit->getDepositUuid().'.xml';
             file_put_contents($atomPath, $xml);
         }
         try {
