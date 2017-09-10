@@ -211,13 +211,13 @@ class PingResult
     }
 
     /**
-     * Return the institution title.
+     * Return the provider title.
      *
      * @return string
      */
-    public function getInstitutionTitle($default = null)
+    public function getProviderTitle($default = null)
     {
-        $title = $this->simpleQuery('/plnplugin/institutionInfo/title');
+        $title = $this->simpleQuery('/plnplugin/providerInfo/title');
         if ($title === null) {
             return $default;
         }
@@ -232,7 +232,7 @@ class PingResult
      */
     public function getArticleCount()
     {
-        return $this->simpleQuery('/plnplugin/institutionInfo/articles/@count');
+        return $this->simpleQuery('/plnplugin/providerInfo/articles/@count');
     }
 
     /**
@@ -246,7 +246,7 @@ class PingResult
         if ($this->xml === null) {
             return $articles;
         }
-        foreach ($this->xml->xpath('/plnplugin/institutionInfo/articles/article') as $element) {
+        foreach ($this->xml->xpath('/plnplugin/providerInfo/articles/article') as $element) {
             $articles[] = array(
                 'date' => $element['pubDate'],
                 'title' => (string) $element,

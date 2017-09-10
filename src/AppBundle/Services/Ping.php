@@ -2,7 +2,7 @@
 
 namespace AppBundle\Services;
 
-use AppBundle\Entity\Institution;
+use AppBundle\Entity\Provider;
 use AppBundle\Utility\PingResult;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Registry;
@@ -14,7 +14,7 @@ use GuzzleHttp\Exception\XmlParseException;
 use Monolog\Logger;
 
 /**
- * Send a PING request to a institution, and return the result.
+ * Send a PING request to a provider, and return the result.
  */
 class Ping
 {
@@ -76,18 +76,18 @@ class Ping
     }
 
     /**
-     * Ping a institution, check on it's health, etc.
+     * Ping a provider, check on it's health, etc.
      *
-     * @param Institution $institution
+     * @param Provider $provider
      *
      * @return PingResult
      *
      * @throws Exception
      */
-    public function ping(Institution $institution)
+    public function ping(Provider $provider)
     {
-        $this->logger->notice("Pinging {$institution}");
-        $url = $institution->getGatewayUrl();
+        $this->logger->notice("Pinging {$provider}");
+        $url = $provider->getGatewayUrl();
         $client = $this->getClient();
         try {
             $response = $client->get($url, array(
@@ -99,31 +99,31 @@ class Ping
             ));
             $pingResponse = new PingResult($response);
             if ($pingResponse->getHttpStatus() === 200) {
-                $institution->setContacted(new DateTime());
-                $institution->setTitle($pingResponse->getInstitutionTitle('(unknown title)'));
-                $institution->setOjsVersion($pingResponse->getOjsRelease());
-                $institution->setTermsAccepted($pingResponse->areTermsAccepted() === 'yes');
+                $provider->setContacted(new DateTime());
+                $provider->setTitle($pingResponse->getProviderTitle('(unknown title)'));
+                $provider->setOjsVersion($pingResponse->getOjsRelease());
+                $provider->setTermsAccepted($pingResponse->areTermsAccepted() === 'yes');
             } else {
-                $institution->setStatus('ping-error');
+                $provider->setStatus('ping-error');
             }
-            $this->em->flush($institution);
+            $this->em->flush($provider);
 
             return $pingResponse;
         } catch (RequestException $e) {
-            $institution->setStatus('ping-error');
-            $this->em->flush($institution);
+            $provider->setStatus('ping-error');
+            $this->em->flush($provider);
             if ($e->hasResponse()) {
                 return new PingResult($e->getResponse());
             }
             throw $e;
         } catch (XmlParseException $e) {
-            $institution->setStatus('ping-error');
-            $this->em->flush($institution);
+            $provider->setStatus('ping-error');
+            $this->em->flush($provider);
 
             return new PingResult($e->getResponse());
         } catch (Exception $e) {
-            $institution->setStatus('ping-error');
-            $this->em->flush($institution);
+            $provider->setStatus('ping-error');
+            $this->em->flush($provider);
             throw $e;
         }
     }

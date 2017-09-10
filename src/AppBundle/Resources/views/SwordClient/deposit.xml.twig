@@ -5,7 +5,7 @@
     <title>{{ title }}</title>
     <id>urn:uuid:{{ deposit.depositUuid }}</id>
     <updated>{{ deposit.received|date('Y-m-d') }}</updated>
-    <author><name>{{ deposit.institution.title }}</name></author>
+    <author><name>{{ deposit.provider.title }}</name></author>
     <summary type="text">
         Content deposited to LOCKSS-O-Matic via the PKP PLN Staging Server.
     </summary>
@@ -17,13 +17,13 @@
         pkp:volume="{{deposit.volume}}"
         pkp:issue="{{deposit.issue}}"
         pkp:pubDate="{{deposit.pubDate|date}}"
-        pkp:institutionTitle="{{plnInstitutionTitle}}"
-        pkp:institutionUrl="{{deposit.institution.url}}"
-        pkp:issn="{{deposit.institution.issn}}"
+        pkp:providerTitle="{{plnProviderTitle}}"
+        pkp:providerUrl="{{deposit.provider.url}}"
+        pkp:issn="{{deposit.provider.issn}}"
 	pkp:publisher="{{publisher}}"
-        pkp:publisherName="{{deposit.institution.publisherName}}"
-        pkp:publisherUrl="{{deposit.institution.publisherUrl}}">
-        {{ url('fetch', { 'institutionUuid': deposit.institution.uuid, 'depositUuid': deposit.depositUuid }) }}
+        pkp:publisherName="{{deposit.provider.publisherName}}"
+        pkp:publisherUrl="{{deposit.provider.publisherUrl}}">
+        {{ url('fetch', { 'providerUuid': deposit.provider.uuid, 'depositUuid': deposit.depositUuid }) }}
         <lom:property name="base_url" value="{{ url('home') }}" />
         <lom:property name="permission_url" value="{{ url('lockss_permission') }}" />
         <lom:property name="container_number" value="{{ deposit.aucontainer.id }}"/>

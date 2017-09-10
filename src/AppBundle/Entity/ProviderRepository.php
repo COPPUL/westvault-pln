@@ -8,18 +8,18 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\Expr\Func;
 
 /**
- * InstitutionRepository.
+ * ProviderRepository.
  *
- * This class adds a simple institution search and a few other easy queries.
+ * This class adds a simple provider search and a few other easy queries.
  */
-class InstitutionRepository extends EntityRepository
+class ProviderRepository extends EntityRepository
 {
     /**
-     * Search for a institution by title, uuid, issn, url, email, or publisher.
+     * Search for a provider by title, uuid, issn, url, email, or publisher.
      *
      * @param string $q
      *
-     * @return Collection|Institution[]
+     * @return Collection|Provider[]
      */
     public function search($q)
     {
@@ -41,17 +41,17 @@ class InstitutionRepository extends EntityRepository
             )
         );
         $query = $qb->getQuery();
-        $institutions = $query->getResult();
+        $providers = $query->getResult();
 
-        return $institutions;
+        return $providers;
     }
 
     /**
-     * Find institutions by status.
+     * Find providers by status.
      *
      * @param string $status
      *
-     * @return Collection|Institution[]
+     * @return Collection|Provider[]
      */
     public function findByStatus($status)
     {
@@ -61,7 +61,7 @@ class InstitutionRepository extends EntityRepository
     }
 
     /**
-     * Summarize the institution statuses, counting them by status.
+     * Summarize the provider statuses, counting them by status.
      *
      * @return array
      */
@@ -76,11 +76,11 @@ class InstitutionRepository extends EntityRepository
     }
 
     /**
-     * Find institutions that haven't contacted the PLN in $days.
+     * Find providers that haven't contacted the PLN in $days.
      *
      * @param int $days
      *
-     * @return Collection|Institution[]
+     * @return Collection|Provider[]
      */
     public function findSilent($days)
     {
@@ -94,12 +94,12 @@ class InstitutionRepository extends EntityRepository
     }
 
     /**
-     * Find institutions that have gone silent and that notifications have been sent
+     * Find providers that have gone silent and that notifications have been sent
      * for, but they have not been updated yet.
      *
      * @param int $days
      *
-     * @return Collection|Institution[]
+     * @return Collection|Provider[]
      */
     public function findOverdue($days)
     {
@@ -113,11 +113,11 @@ class InstitutionRepository extends EntityRepository
 
     /**
      * @todo This method should be called findRecent(). It does not find
-     * institutions with status=new
+     * providers with status=new
      *
      * @param type $limit
      *
-     * @return Collection|Institution[]
+     * @return Collection|Provider[]
      */
     public function findNew($limit = 5)
     {

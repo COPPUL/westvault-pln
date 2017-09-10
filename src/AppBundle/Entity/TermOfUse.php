@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * TermOfUse.
  *
- * A single term of use that the institution managers must agree to.
+ * A single term of use that the provider managers must agree to.
  *
  * @ORM\Table()
  * @ORM\HasLifecycleCallbacks

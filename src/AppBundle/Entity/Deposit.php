@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * A single Deposit from a institution.
+ * A single Deposit from a provider.
  *
  * @ORM\Table()
  * @ORM\HasLifecycleCallbacks
@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Deposit
 {
     /**
-     * The institution version was added to the PKP PLN plugin in OJS version 3. If
+     * The provider version was added to the PKP PLN plugin in OJS version 3. If
      * a deposit doesn't have a version attribute, then assume it is OJS 2.4.8.
      */
     const DEFAULT_JOURNAL_VERSION = '2.4.8';
@@ -33,14 +33,14 @@ class Deposit
     private $id;
 
     /**
-     * The institution that sent this deposit.
+     * The provider that sent this deposit.
      *
-     * @var Institution
+     * @var Provider
      *
-     * @ORM\ManyToOne(targetEntity="Institution", inversedBy="deposits")
-     * @ORM\JoinColumn(name="institution_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Provider", inversedBy="deposits")
+     * @ORM\JoinColumn(name="provider_id", referencedColumnName="id")
      */
-    private $institution;
+    private $provider;
     
     /**
      * The AuContainer that holds this deposit.
@@ -197,7 +197,7 @@ class Deposit
     {
         $this->received = new DateTime();
         $this->processingLog = '';
-        $this->state = 'depositedByInstitution';
+        $this->state = 'depositedByProvider';
         $this->errorLog = array();
         $this->errorCount = 0;
         $this->harvestAttempts = 0;
@@ -583,26 +583,26 @@ class Deposit
     }
 
     /**
-     * Set institution
+     * Set provider
      *
-     * @param Institution $institution
+     * @param Provider $provider
      * @return Deposit
      */
-    public function setInstitution(Institution $institution = null)
+    public function setProvider(Provider $provider = null)
     {
-        $this->institution = $institution;
+        $this->provider = $provider;
 
         return $this;
     }
 
     /**
-     * Get institution
+     * Get provider
      *
-     * @return Institution 
+     * @return Provider 
      */
-    public function getInstitution()
+    public function getProvider()
     {
-        return $this->institution;
+        return $this->provider;
     }
 
     /**

@@ -13,7 +13,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Build a form to edit a blacklist entry.
  */
-class InstitutionType extends AbstractType
+class ProviderType extends AbstractType
 {
     /**
      * {@inheritdoc}
@@ -32,7 +32,7 @@ class InstitutionType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'AppBundle\Entity\Institution',
+            'data_class' => 'AppBundle\Entity\Provider',
         ));
     }
 
@@ -41,6 +41,6 @@ class InstitutionType extends AbstractType
      */
     public function getName()
     {
-        return 'appbundle_institution';
+        return 'appbundle_provider';
     }
 }

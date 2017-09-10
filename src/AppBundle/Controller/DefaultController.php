@@ -98,35 +98,35 @@ class DefaultController extends Controller {
     /**
      * Fetch a processed and packaged deposit.
      *
-     * @Route("/fetch/{institutionUuid}/{depositUuid}.zip", name="fetch")
+     * @Route("/fetch/{providerUuid}/{depositUuid}.zip", name="fetch")
      *
      * @param Request $request
-     * @param string  $institutionUuid
+     * @param string  $providerUuid
      * @param string  $depositUuid
      *
      * @return BinaryFileResponse
      */
-    public function fetchAction(Request $request, $institutionUuid, $depositUuid) {
-        $institutionUuid = strtoupper($institutionUuid);
+    public function fetchAction(Request $request, $providerUuid, $depositUuid) {
+        $providerUuid = strtoupper($providerUuid);
         $depositUuid = strtoupper($depositUuid);
         $logger = $this->get('monolog.logger.lockss');
-        $logger->notice("fetch - {$request->getClientIp()} - {$institutionUuid} - {$depositUuid}");
+        $logger->notice("fetch - {$request->getClientIp()} - {$providerUuid} - {$depositUuid}");
         $em = $this->container->get('doctrine');
-        $institution = $em->getRepository('AppBundle:Institution')->findOneBy(array('uuid' => $institutionUuid));
+        $provider = $em->getRepository('AppBundle:Provider')->findOneBy(array('uuid' => $providerUuid));
         $deposit = $em->getRepository('AppBundle:Deposit')->findOneBy(array('depositUuid' => $depositUuid));
         if (!$deposit) {
-            $logger->error("fetch - 404 DEPOSIT NOT FOUND - {$request->getClientIp()} - {$institutionUuid} - {$depositUuid}");
-            throw new NotFoundHttpException("{$institutionUuid}/{$depositUuid}.zip does not exist.");
+            $logger->error("fetch - 404 DEPOSIT NOT FOUND - {$request->getClientIp()} - {$providerUuid} - {$depositUuid}");
+            throw new NotFoundHttpException("{$providerUuid}/{$depositUuid}.zip does not exist.");
         }
-        if ($deposit->getInstitution()->getId() !== $institution->getId()) {
-            $logger->error("fetch - 400 JOURNAL MISMATCH - {$request->getClientIp()} - {$institutionUuid} - {$depositUuid}");
-            throw new BadRequestHttpException("The requested Institution ID does not match the deposit's institution ID.");
+        if ($deposit->getProvider()->getId() !== $provider->getId()) {
+            $logger->error("fetch - 400 JOURNAL MISMATCH - {$request->getClientIp()} - {$providerUuid} - {$depositUuid}");
+            throw new BadRequestHttpException("The requested Provider ID does not match the deposit's provider ID.");
         }
         $path = $this->get('filepaths')->getStagingBagPath($deposit);
         $fs = new Filesystem();
         if (!$fs->exists($path)) {
-            $logger->error("fetch - 404 PACKAGE NOT FOUND - {$request->getClientIp()} - {$institutionUuid} - {$depositUuid}");
-            throw new NotFoundHttpException("{$institutionUuid}/{$depositUuid}.zip does not exist.");
+            $logger->error("fetch - 404 PACKAGE NOT FOUND - {$request->getClientIp()} - {$providerUuid} - {$depositUuid}");
+            throw new NotFoundHttpException("{$providerUuid}/{$depositUuid}.zip does not exist.");
         }
 
         return new BinaryFileResponse($path);

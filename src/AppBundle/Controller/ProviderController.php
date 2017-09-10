@@ -2,8 +2,8 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Entity\Institution;
-use AppBundle\Form\InstitutionType;
+use AppBundle\Entity\Provider;
+use AppBundle\Form\ProviderType;
 use DateTime;
 use Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -14,17 +14,17 @@ use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Institution controller. Institutions can be deleted, and it's possible to update
- * the institution health status.
+ * Provider controller. Providers can be deleted, and it's possible to update
+ * the provider health status.
  *
- * @Route("/institution")
+ * @Route("/provider")
  */
-class InstitutionController extends Controller
+class ProviderController extends Controller
 {
     /**
-     * Lists all Institution entities.
+     * Lists all Provider entities.
      *
-     * @Route("/", name="institution")
+     * @Route("/", name="provider")
      * @Method("GET")
      * @Template()
      *
@@ -38,7 +38,7 @@ class InstitutionController extends Controller
          * @var EntityManager
          */
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('AppBundle:Institution');
+        $repo = $em->getRepository('AppBundle:Provider');
         $qb = $repo->createQueryBuilder('e');
         $status = $request->query->get('status');
         if ($status !== null) {
@@ -63,11 +63,11 @@ class InstitutionController extends Controller
     }
 
     /**
-     * Search institutions.
+     * Search providers.
      *
-     * In the InstitutionController, this action must appear before showAction().
+     * In the ProviderController, this action must appear before showAction().
      *
-     * @Route("/search", name="institution_search")
+     * @Route("/search", name="provider_search")
      * @Method("GET")
      * @Template()
      *
@@ -80,7 +80,7 @@ class InstitutionController extends Controller
         $em = $this->getDoctrine()->getManager();
         $q = $request->query->get('q', '');
 
-        $repo = $em->getRepository('AppBundle:Institution');
+        $repo = $em->getRepository('AppBundle:Provider');
         $paginator = $this->get('knp_paginator');
 
         $entities = array();
@@ -103,9 +103,9 @@ class InstitutionController extends Controller
     }
 
     /**
-     * Finds and displays a Institution entity.
+     * Finds and displays a Provider entity.
      *
-     * @Route("/{id}", name="institution_show")
+     * @Route("/{id}", name="provider_show")
      * @Method("GET")
      * @Template()
      *
@@ -117,10 +117,10 @@ class InstitutionController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('AppBundle:Institution')->find($id);
+        $entity = $em->getRepository('AppBundle:Provider')->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Institution entity.');
+            throw $this->createNotFoundException('Unable to find Provider entity.');
         }
 
         return array(
@@ -129,19 +129,19 @@ class InstitutionController extends Controller
     }
 
     /**
-     * Build and return a form to delete a institution.
+     * Build and return a form to delete a provider.
      *
-     * @param Institution $institution
+     * @param Provider $provider
      *
      * @return Form
      */
-    private function createDeleteForm(Institution $institution)
+    private function createDeleteForm(Provider $provider)
     {
-        $formBuilder = $this->createFormBuilder($institution);
-        $formBuilder->setAction($this->generateUrl('institution_delete', array('id' => $institution->getId())));
+        $formBuilder = $this->createFormBuilder($provider);
+        $formBuilder->setAction($this->generateUrl('provider_delete', array('id' => $provider->getId())));
         $formBuilder->setMethod('DELETE');
         $formBuilder->add('confirm', 'checkbox', array(
-            'label' => 'Yes, delete this institution',
+            'label' => 'Yes, delete this provider',
             'mapped' => false,
             'value' => 'yes',
             'required' => false,
@@ -153,16 +153,16 @@ class InstitutionController extends Controller
     }
 
     /**
-     * Creates a form to edit a Institution entity.
+     * Creates a form to edit a Provider entity.
      *
      * @param Document $entity The entity
      *
      * @return Form The form
      */
-    private function createEditForm(Institution $entity)
+    private function createEditForm(Provider $entity)
     {
-        $form = $this->createForm(new InstitutionType(), $entity, array(
-            'action' => $this->generateUrl('institution_edit', array('id' => $entity->getId())),
+        $form = $this->createForm(new ProviderType(), $entity, array(
+            'action' => $this->generateUrl('provider_edit', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
 
@@ -172,9 +172,9 @@ class InstitutionController extends Controller
     }
 
     /**
-     * Displays a form to edit an existing Institution entity.
+     * Displays a form to edit an existing Provider entity.
      *
-     * @Route("/{id}/edit", name="institution_edit")
+     * @Route("/{id}/edit", name="provider_edit")
      * @Method({"GET", "PUT"})
      * @Template()
 	 * @param Request $request
@@ -183,14 +183,14 @@ class InstitutionController extends Controller
     public function editAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository('AppBundle:Institution')->find($id);
+        $entity = $em->getRepository('AppBundle:Provider')->find($id);
         $editForm = $this->createEditForm($entity);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $em->flush();
-            $this->addFlash('success', 'The institution has been updated.');
-            return $this->redirectToRoute('institution_show', array('id' => $id));
+            $this->addFlash('success', 'The provider has been updated.');
+            return $this->redirectToRoute('provider_show', array('id' => $id));
         }
 
         return array(
@@ -200,9 +200,9 @@ class InstitutionController extends Controller
     }
 
     /**
-     * Finds and displays a Institution entity.
+     * Finds and displays a Provider entity.
      *
-     * @Route("/{id}/delete", name="institution_delete")
+     * @Route("/{id}/delete", name="provider_delete")
      * @Method({"GET","DELETE"})
      * @Template()
      *
@@ -215,23 +215,23 @@ class InstitutionController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('AppBundle:Institution')->find($id);
+        $entity = $em->getRepository('AppBundle:Provider')->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Institution entity.');
+            throw $this->createNotFoundException('Unable to find Provider entity.');
         }
 
         if ($entity->countDeposits() > 0) {
-            $this->addFlash('warning', 'Institutions which have made deposits cannot be deleted.');
+            $this->addFlash('warning', 'Providers which have made deposits cannot be deleted.');
 
-            return $this->redirect($this->generateUrl('institution_show', array('id' => $entity->getId())));
+            return $this->redirect($this->generateUrl('provider_show', array('id' => $entity->getId())));
         }
 
         $form = $this->createDeleteForm($entity);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid() && $form->get('confirm')->getData()) {
-            //            Once InstitutionUrls are a thing, uncomment these lines.
+            //            Once ProviderUrls are a thing, uncomment these lines.
 //            foreach($entity->getUrls() as $url) {
 //                $em->remove($url);
 //            }
@@ -247,9 +247,9 @@ class InstitutionController extends Controller
             $em->remove($entity);
             $em->flush();
 
-            $this->addFlash('success', 'Institution deleted.');
+            $this->addFlash('success', 'Provider deleted.');
 
-            return $this->redirect($this->generateUrl('institution'));
+            return $this->redirect($this->generateUrl('provider'));
         }
 
         return array(
@@ -259,9 +259,9 @@ class InstitutionController extends Controller
     }
 
     /**
-     * Update a institution status.
+     * Update a provider status.
      *
-     * @Route("/{id}/status", name="institution_status")
+     * @Route("/{id}/status", name="provider_status")
      *
      * @param Request $request
      * @param string  $id
@@ -269,26 +269,26 @@ class InstitutionController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository('AppBundle:Institution')->find($id);
+        $entity = $em->getRepository('AppBundle:Provider')->find($id);
         $status = $request->query->get('status');
         if (!$status) {
-            $this->addFlash('error', "The institution's status has not been changed.");
+            $this->addFlash('error', "The provider's status has not been changed.");
         } else {
             $entity->setStatus($status);
             if ($status === 'healthy') {
                 $entity->setContacted(new DateTime());
             }
-            $this->addFlash('success', "The institution's status has been updated.");
+            $this->addFlash('success', "The provider's status has been updated.");
             $em->flush();
         }
 
-        return $this->redirect($this->generateUrl('institution_show', array('id' => $entity->getId())));
+        return $this->redirect($this->generateUrl('provider_show', array('id' => $entity->getId())));
     }
 
     /**
-     * Ping a institution and display the result.
+     * Ping a provider and display the result.
      *
-     * @Route("/ping/{id}", name="institution_ping")
+     * @Route("/ping/{id}", name="provider_ping")
      * @Method("GET")
      * @Template()
      *
@@ -300,10 +300,10 @@ class InstitutionController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('AppBundle:Institution')->find($id);
+        $entity = $em->getRepository('AppBundle:Provider')->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Institution entity.');
+            throw $this->createNotFoundException('Unable to find Provider entity.');
         }
 
         try {
@@ -311,12 +311,12 @@ class InstitutionController extends Controller
             if (!$result->hasXml() || $result->hasError() || ($result->getHttpStatus() !== 200)) {
                 $this->addFlash('warning', "The ping did not complete. HTTP {$result->getHttpStatus()} {$result->getError()}");
 
-                return $this->redirect($this->generateUrl('institution_show', array(
+                return $this->redirect($this->generateUrl('provider_show', array(
                     'id' => $id,
                 )));
             }
             $entity->setContacted(new DateTime());
-            $entity->setTitle($result->getInstitutionTitle());
+            $entity->setTitle($result->getProviderTitle());
             $entity->setStatus('healthy');
             $em->flush($entity);
 
@@ -327,16 +327,16 @@ class InstitutionController extends Controller
         } catch (Exception $e) {
             $this->addFlash('danger', $e->getMessage());
 
-            return $this->redirect($this->generateUrl('institution_show', array(
+            return $this->redirect($this->generateUrl('provider_show', array(
                 'id' => $id,
             )));
         }
     }
 
     /**
-     * Show the deposits for a institution.
+     * Show the deposits for a provider.
      *
-     * @Route("/{id}/deposits", name="institution_deposits")
+     * @Route("/{id}/deposits", name="provider_deposits")
      * @Method("GET")
      * @Template()
      *
@@ -349,14 +349,14 @@ class InstitutionController extends Controller
     {
         /** var ObjectManager $em */
         $em = $this->getDoctrine()->getManager();
-        $institution = $em->getRepository('AppBundle:Institution')->find($id);
-        if (!$institution) {
-            throw $this->createNotFoundException('Unable to find Institution entity.');
+        $provider = $em->getRepository('AppBundle:Provider')->find($id);
+        if (!$provider) {
+            throw $this->createNotFoundException('Unable to find Provider entity.');
         }
 
         $qb = $em->getRepository('AppBundle:Deposit')->createQueryBuilder('d')
-                ->where('d.institution = :institution')
-                ->setParameter('institution', $institution);
+                ->where('d.provider = :provider')
+                ->setParameter('provider', $provider);
         $paginator = $this->get('knp_paginator');
         $entities = $paginator->paginate(
             $qb,
@@ -365,7 +365,7 @@ class InstitutionController extends Controller
         );
 
         return array(
-            'institution' => $institution,
+            'provider' => $provider,
             'entities' => $entities,
         );
     }

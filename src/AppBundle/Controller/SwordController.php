@@ -3,7 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Deposit;
-use AppBundle\Entity\Institution;
+use AppBundle\Entity\Provider;
 use AppBundle\Entity\TermOfUse;
 use AppBundle\Exception\SwordException;
 use AppBundle\Utility\Namespaces;
@@ -69,28 +69,28 @@ class SwordController extends Controller
     }
 
     /**
-     * Check if a institution's uuid is whitelised or blacklisted. The rules are:.
+     * Check if a provider's uuid is whitelised or blacklisted. The rules are:.
      *
-     * If the institution uuid is whitelisted, return true
-     * If the institution uuid is blacklisted, return false
+     * If the provider uuid is whitelisted, return true
+     * If the provider uuid is blacklisted, return false
      * Return the pln_accepting parameter from parameters.yml
      *
-     * @param string $institution_uuid
+     * @param string $provider_uuid
      *
      * @return bool
      */
-    private function checkAccess($institution_uuid)
+    private function checkAccess($provider_uuid)
     {
         /* @var BlackWhitelist */
         $bw = $this->get('blackwhitelist');
-        $this->get('monolog.logger.sword')->info("Checking access for {$institution_uuid}");
-        if ($bw->isWhitelisted($institution_uuid)) {
-            $this->get('monolog.logger.sword')->info("whitelisted {$institution_uuid}");
+        $this->get('monolog.logger.sword')->info("Checking access for {$provider_uuid}");
+        if ($bw->isWhitelisted($provider_uuid)) {
+            $this->get('monolog.logger.sword')->info("whitelisted {$provider_uuid}");
 
             return true;
         }
-        if ($bw->isBlacklisted($institution_uuid)) {
-            $this->get('monolog.logger.sword')->notice("blacklisted {$institution_uuid}");
+        if ($bw->isBlacklisted($provider_uuid)) {
+            $this->get('monolog.logger.sword')->notice("blacklisted {$provider_uuid}");
 
             return false;
         }
@@ -99,45 +99,45 @@ class SwordController extends Controller
     }
 
     /**
-     * The institution with UUID $uuid has contacted the PLN. Add a record for the
-     * institution if there isn't one, otherwise update the timestamp.
+     * The provider with UUID $uuid has contacted the PLN. Add a record for the
+     * provider if there isn't one, otherwise update the timestamp.
      *
      * @param string $uuid
      * @param string $url
      *
-     * @return Institution
+     * @return Provider
      */
-    private function institutionContact($uuid, $url)
+    private function providerContact($uuid, $url)
     {
         $logger = $this->get('monolog.logger.sword');
         $em = $this->getDoctrine()->getManager();
-        $institutionRepo = $em->getRepository('AppBundle:Institution');
-        $institution = $institutionRepo->findOneBy(array(
+        $providerRepo = $em->getRepository('AppBundle:Provider');
+        $provider = $providerRepo->findOneBy(array(
             'uuid' => $uuid,
         ));
-        if ($institution !== null) {
-            $institution->setTimestamp();
-            if ($institution->getUrl() !== $url) {
-                $logger->warning("institution URL mismatch - {$uuid} - {$institution->getUrl()} - {$url}");
-                $institution->setUrl($url);
+        if ($provider !== null) {
+            $provider->setTimestamp();
+            if ($provider->getUrl() !== $url) {
+                $logger->warning("provider URL mismatch - {$uuid} - {$provider->getUrl()} - {$url}");
+                $provider->setUrl($url);
             }
         } else {
-            $institution = new Institution();
-            $institution->setUuid($uuid);
-            $institution->setUrl($url);
-            $institution->setTimestamp();
-            $institution->setTitle('unknown');
-            $institution->setIssn('unknown');
-            $institution->setStatus('new');
-            $institution->setEmail('unknown@unknown.com');
-            $em->persist($institution);
+            $provider = new Provider();
+            $provider->setUuid($uuid);
+            $provider->setUrl($url);
+            $provider->setTimestamp();
+            $provider->setTitle('unknown');
+            $provider->setIssn('unknown');
+            $provider->setStatus('new');
+            $provider->setEmail('unknown@unknown.com');
+            $em->persist($provider);
         }
-        if ($institution->getStatus() !== 'new') {
-            $institution->setStatus('healthy');
+        if ($provider->getStatus() !== 'new') {
+            $provider->setStatus('healthy');
         }
-        $em->flush($institution);
+        $em->flush($provider);
 
-        return $institution;
+        return $provider;
     }
 
     /**
@@ -160,16 +160,16 @@ class SwordController extends Controller
     /**
      * Figure out which message to return for the network status widget in OJS.
      *
-     * @param Institution $institution
+     * @param Provider $provider
      *
      * @return string
      */
-    private function getNetworkMessage(Institution $institution)
+    private function getNetworkMessage(Provider $provider)
     {
-        if ($institution->getOjsVersion() === null) {
+        if ($provider->getOjsVersion() === null) {
             return $this->container->getParameter('network_default');
         }
-        if (version_compare($institution->getOjsVersion(), $this->container->getParameter('min_ojs_version'), '>=')) {
+        if (version_compare($provider->getOjsVersion(), $this->container->getParameter('min_ojs_version'), '>=')) {
             return $this->container->getParameter('network_accepting');
         }
 
@@ -177,8 +177,8 @@ class SwordController extends Controller
     }
 
     /**
-     * Return a SWORD service document for a institution. Requires On-Behalf-Of
-     * and Institution-Url HTTP headers.
+     * Return a SWORD service document for a provider. Requires On-Behalf-Of
+     * and Provider-Url HTTP headers.
      *
      * @Route("/sd-iri", name="service_document")
      * @Method("GET")
@@ -193,7 +193,7 @@ class SwordController extends Controller
         $logger = $this->get('monolog.logger.sword');
 
         $obh = strtoupper($this->fetchHeader($request, 'On-Behalf-Of'));
-        $institutionUrl = $this->fetchHeader($request, 'Institution-Url');
+        $providerUrl = $this->fetchHeader($request, 'Provider-Url');
 
         $accepting = $this->checkAccess($obh);
         $acceptingLog = 'not accepting';
@@ -201,24 +201,24 @@ class SwordController extends Controller
             $acceptingLog = 'accepting';
         }
 
-        $logger->notice("service document - {$request->getClientIp()} - {$obh} - {$institutionUrl} - {$acceptingLog}");
+        $logger->notice("service document - {$request->getClientIp()} - {$obh} - {$providerUrl} - {$acceptingLog}");
         if (!$obh) {
-            throw new SwordException(400, "Missing On-Behalf-Of header for {$institutionUrl}");
+            throw new SwordException(400, "Missing On-Behalf-Of header for {$providerUrl}");
         }
-        if (!$institutionUrl) {
-            throw new SwordException(400, "Missing Institution-Url header for {$obh}");
+        if (!$providerUrl) {
+            throw new SwordException(400, "Missing Provider-Url header for {$obh}");
         }
 
-        $institution = $this->institutionContact($obh, $institutionUrl);
+        $provider = $this->providerContact($obh, $providerUrl);
 
         /* @var Response */
         $response = $this->render('AppBundle:Sword:serviceDocument.xml.twig', array(
             'onBehalfOf' => $obh,
             'accepting' => $accepting ? 'Yes' : 'No',
-            'message' => $this->getNetworkMessage($institution),
+            'message' => $this->getNetworkMessage($provider),
             'colIri' => $this->generateUrl(
                 'create_deposit',
-                array('institution_uuid' => $obh),
+                array('provider_uuid' => $obh),
                 UrlGeneratorInterface::ABSOLUTE_URL
             ),
             'terms' => $this->getTermsOfUse(),
@@ -232,46 +232,46 @@ class SwordController extends Controller
     /**
      * Create a deposit.
      *
-     * @Route("/col-iri/{institution_uuid}", name="create_deposit")
+     * @Route("/col-iri/{provider_uuid}", name="create_deposit")
      * @Method("POST")
      *
      * @param Request $request
-     * @param string  $institution_uuid
+     * @param string  $provider_uuid
      *
      * @return Response
      */
-    public function createDepositAction(Request $request, $institution_uuid)
+    public function createDepositAction(Request $request, $provider_uuid)
     {
         /* @var LoggerInterface */
         $logger = $this->get('monolog.logger.sword');
-        $institution_uuid = strtoupper($institution_uuid);
-        $accepting = $this->checkAccess($institution_uuid);
+        $provider_uuid = strtoupper($provider_uuid);
+        $accepting = $this->checkAccess($provider_uuid);
         $acceptingLog = 'not accepting';
         if ($accepting) {
             $acceptingLog = 'accepting';
         }
 
-        $logger->notice("create deposit - {$request->getClientIp()} - {$institution_uuid} - {$acceptingLog}");
+        $logger->notice("create deposit - {$request->getClientIp()} - {$provider_uuid} - {$acceptingLog}");
         if (!$accepting) {
             throw new SwordException(400, 'Not authorized to create deposits.');
         }
 
-        if ($this->checkAccess($institution_uuid) === false) {
-            $logger->notice("create deposit [Not Authorized] - {$request->getClientIp()} - {$institution_uuid}");
+        if ($this->checkAccess($provider_uuid) === false) {
+            $logger->notice("create deposit [Not Authorized] - {$request->getClientIp()} - {$provider_uuid}");
             throw new SwordException(400, 'Not authorized to make deposits.');
         }
 
         $xml = $this->parseXml($request->getContent());
         try {
-            $institution = $this->get('institutionbuilder')->fromXml($xml, $institution_uuid);
-            $institution->setStatus('healthy');
-            $deposit = $this->get('depositbuilder')->fromXml($institution, $xml);
+            $provider = $this->get('providerbuilder')->fromXml($xml, $provider_uuid);
+            $provider->setStatus('healthy');
+            $deposit = $this->get('depositbuilder')->fromXml($provider, $xml);
         } catch (\Exception $e) {
             throw new SwordException(500, $e->getMessage(), $e);
         }
 
         /* @var Response */
-        $response = $this->statementAction($request, $institution->getUuid(), $deposit->getDepositUuid());
+        $response = $this->statementAction($request, $provider->getUuid(), $deposit->getDepositUuid());
         $response->headers->set(
             'Location',
             $deposit->getDepositReceipt(),
@@ -285,27 +285,27 @@ class SwordController extends Controller
     /**
      * Check that status of a deposit by fetching the sword statemt.
      *
-     * @Route("/cont-iri/{institution_uuid}/{deposit_uuid}/state", name="statement")
+     * @Route("/cont-iri/{provider_uuid}/{deposit_uuid}/state", name="statement")
      * @Method("GET")
      *
      * @param Request $request
-     * @param string  $institution_uuid
+     * @param string  $provider_uuid
      * @param string  $deposit_uuid
      *
      * @return Response
      */
-    public function statementAction(Request $request, $institution_uuid, $deposit_uuid)
+    public function statementAction(Request $request, $provider_uuid, $deposit_uuid)
     {
         /* @var LoggerInterface */
         $logger = $this->get('monolog.logger.sword');
-        $institution_uuid = strtoupper($institution_uuid);
-        $accepting = $this->checkAccess($institution_uuid);
+        $provider_uuid = strtoupper($provider_uuid);
+        $accepting = $this->checkAccess($provider_uuid);
         $acceptingLog = 'not accepting';
         if ($accepting) {
             $acceptingLog = 'accepting';
         }
 
-        $logger->notice("statement - {$request->getClientIp()} - {$institution_uuid} - {$acceptingLog}");
+        $logger->notice("statement - {$request->getClientIp()} - {$provider_uuid} - {$acceptingLog}");
 
         if (!$accepting && !$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             throw new SwordException(400, 'Not authorized to request statements.');
@@ -313,10 +313,10 @@ class SwordController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
-        /* @var Institution */
-        $institution = $em->getRepository('AppBundle:Institution')->findOneBy(array('uuid' => $institution_uuid));
-        if ($institution === null) {
-            throw new SwordException(400, 'Institution UUID not found.');
+        /* @var Provider */
+        $provider = $em->getRepository('AppBundle:Provider')->findOneBy(array('uuid' => $provider_uuid));
+        if ($provider === null) {
+            throw new SwordException(400, 'Provider UUID not found.');
         }
 
         /* @var Deposit */
@@ -325,12 +325,12 @@ class SwordController extends Controller
             throw new SwordException(400, 'Deposit UUID not found.');
         }
 
-        if ($institution->getId() !== $deposit->getInstitution()->getId()) {
-            throw new SwordException(400, 'Deposit does not belong to institution.');
+        if ($provider->getId() !== $deposit->getProvider()->getId()) {
+            throw new SwordException(400, 'Deposit does not belong to provider.');
         }
 
-        $institution->setContacted(new DateTime());
-        $institution->setStatus('healthy');
+        $provider->setContacted(new DateTime());
+        $provider->setStatus('healthy');
         $em->flush();
 
         /* @var Response */
@@ -345,40 +345,40 @@ class SwordController extends Controller
     /**
      * Edit a deposit with an HTTP PUT.
      *
-     * @Route("/cont-iri/{institution_uuid}/{deposit_uuid}/edit")
+     * @Route("/cont-iri/{provider_uuid}/{deposit_uuid}/edit")
      * @Method("PUT")
      *
      * @param Request $request
-     * @param string  $institution_uuid
+     * @param string  $provider_uuid
      * @param string  $deposit_uuid
      *
      * @return Response
      */
-    public function editAction(Request $request, $institution_uuid, $deposit_uuid)
+    public function editAction(Request $request, $provider_uuid, $deposit_uuid)
     {
         /* @var LoggerInterface */
         $logger = $this->get('monolog.logger.sword');
-        $institution_uuid = strtoupper($institution_uuid);
+        $provider_uuid = strtoupper($provider_uuid);
         $deposit_uuid = strtoupper($deposit_uuid);
-        $accepting = $this->checkAccess($institution_uuid);
+        $accepting = $this->checkAccess($provider_uuid);
         $acceptingLog = 'not accepting';
         if ($accepting) {
             $acceptingLog = 'accepting';
         }
 
-        $logger->notice("edit deposit - {$request->getClientIp()} - {$institution_uuid} - {$acceptingLog}");
+        $logger->notice("edit deposit - {$request->getClientIp()} - {$provider_uuid} - {$acceptingLog}");
         if (!$accepting) {
             throw new SwordException(400, 'Not authorized to edit deposits.');
         }
 
         $em = $this->getDoctrine()->getManager();
 
-        /** @var Institution $institution */
-        $institution = $em->getRepository('AppBundle:Institution')->findOneBy(array(
-            'uuid' => $institution_uuid,
+        /** @var Provider $provider */
+        $provider = $em->getRepository('AppBundle:Provider')->findOneBy(array(
+            'uuid' => $provider_uuid,
         ));
-        if ($institution === null) {
-            throw new SwordException(400, 'Institution UUID not found.');
+        if ($provider === null) {
+            throw new SwordException(400, 'Provider UUID not found.');
         }
 
         /** @var Deposit $deposit */
@@ -389,17 +389,17 @@ class SwordController extends Controller
             throw new SwordException(400, "Deposit UUID {$deposit_uuid} not found.");
         }
 
-        if ($institution->getId() !== $deposit->getInstitution()->getId()) {
-            throw new SwordException(400, 'Deposit does not belong to institution.');
+        if ($provider->getId() !== $deposit->getProvider()->getId()) {
+            throw new SwordException(400, 'Deposit does not belong to provider.');
         }
 
-        $institution->setContacted(new DateTime());
-        $institution->setStatus('healthy');
+        $provider->setContacted(new DateTime());
+        $provider->setStatus('healthy');
         $xml = $this->parseXml($request->getContent());
-        $newDeposit = $this->get('depositbuilder')->fromXml($institution, $xml);
+        $newDeposit = $this->get('depositbuilder')->fromXml($provider, $xml);
 
         /* @var Response */
-        $response = $this->statementAction($request, $institution_uuid, $deposit_uuid);
+        $response = $this->statementAction($request, $provider_uuid, $deposit_uuid);
         $response->headers->set(
             'Location',
             $newDeposit->getDepositReceipt(),

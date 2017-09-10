@@ -2,14 +2,14 @@
 
 
 {% block pageheader %}
-    <h1>Edit Institution</h1>
-    <p>Use this form to edit a institution's metadata.</p>
+    <h1>Edit Provider</h1>
+    <p>Use this form to edit a provider's metadata.</p>
 {% endblock %}
 
 {% block body -%}
     <div class="btn-toolbar">
         <div class="btn-group pull-right">
-            <a href="{{ path('institution_show', {'id': entity.id}) }}" class="btn btn-default">
+            <a href="{{ path('provider_show', {'id': entity.id}) }}" class="btn btn-default">
                 <span class="glyphicon glyphicon-arrow-left"></span> Back
             </a>
         </div>

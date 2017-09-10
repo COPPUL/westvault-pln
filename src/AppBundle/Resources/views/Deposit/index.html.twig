@@ -41,7 +41,7 @@
                         <th>Uuid</th>
                         <th>Received</th>
                         <th>Action</th>
-                        <th>Institution</th>
+                        <th>Provider</th>
                         <th>Size</th>
                         <th>State</th>
                         <th>Plnstate</th>
@@ -53,7 +53,7 @@
                             <td><a href="{{ path('deposit_show', { 'id': entity.id }) }}">{{ entity.deposituuid }}</a></td>
                             <td>{% if entity.received %}{{ entity.received|date('Y-m-d') }}{% endif %}</td>
                             <td>{{ entity.action }}</td>
-                            <td><a href="{{ path('institution_show', {'id': entity.institution.id}) }}">{{ entity.institution.title }}</a></td>
+                            <td><a href="{{ path('provider_show', {'id': entity.provider.id}) }}">{{ entity.provider.title }}</a></td>
                             <td>{{ entity.size }}</td>
                             <td>{{ entity.state }}</td>
                             <td>{{ entity.plnState }}</td>

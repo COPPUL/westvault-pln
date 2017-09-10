@@ -25,12 +25,12 @@
                 <td>{{ entity.deposituuid }}</td>
             </tr>
             <tr>
-                <th>Institution</th>
-                <td><a href="{{ path('institution_show', {'id': entity.institution.id}) }}">{{ entity.institution.title }}</a></td>
+                <th>Provider</th>
+                <td><a href="{{ path('provider_show', {'id': entity.provider.id}) }}">{{ entity.provider.title }}</a></td>
             </tr>
             <tr>
-                <th>Institution Version</th>
-                <td>{{ entity.institutionVersion }}</td>
+                <th>Provider Version</th>
+                <td>{{ entity.providerVersion }}</td>
             </tr>
             <tr>
                 <th>Received</th>
@@ -89,7 +89,7 @@
             </tr>
             <tr>
                 <th>Staging server deposit statement</th>
-                <td><a href="{{ url('statement', {'institution_uuid': entity.institution.uuid, 'deposit_uuid': entity.depositUuid }) }}">{{ url('statement', {'institution_uuid': entity.institution.uuid, 'deposit_uuid': entity.depositUuid })|preg_replace('~/~', '/&#8203;')|raw }}</a></td>
+                <td><a href="{{ url('statement', {'provider_uuid': entity.provider.uuid, 'deposit_uuid': entity.depositUuid }) }}">{{ url('statement', {'provider_uuid': entity.provider.uuid, 'deposit_uuid': entity.depositUuid })|preg_replace('~/~', '/&#8203;')|raw }}</a></td>
             </tr>
             <tr>
                 <th>Processing Errors</th>
@@ -135,8 +135,8 @@
             </tr>
             <tr>
                 <th>Staged deposit</th>
-                <td><a href='{{ url('fetch', { 'institutionUuid': entity.institution.uuid, 'depositUuid': entity.depositUuid }) }}'>
-                        {{ url('fetch', { 'institutionUuid': entity.institution.uuid, 'depositUuid': entity.depositUuid }) }}
+                <td><a href='{{ url('fetch', { 'providerUuid': entity.provider.uuid, 'depositUuid': entity.depositUuid }) }}'>
+                        {{ url('fetch', { 'providerUuid': entity.provider.uuid, 'depositUuid': entity.depositUuid }) }}
                     </a>
                 </td>
             </tr>

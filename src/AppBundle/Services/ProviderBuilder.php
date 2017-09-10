@@ -2,7 +2,7 @@
 
 namespace AppBundle\Services;
 
-use AppBundle\Entity\Institution;
+use AppBundle\Entity\Provider;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\EntityManager;
 use Exception;
@@ -11,9 +11,9 @@ use SimpleXMLElement;
 use Symfony\Component\Routing\Router;
 
 /**
- * Construct a institution, and save it to the database.
+ * Construct a provider, and save it to the database.
  */
-class InstitutionBuilder
+class ProviderBuilder
 {
     /**
      * @var EntityManager
@@ -53,7 +53,7 @@ class InstitutionBuilder
     /**
      * Set the router.
      *
-     * @todo why does the institution builder need a router?
+     * @todo why does the provider builder need a router?
      *
      * @param Router $router
      */
@@ -85,31 +85,31 @@ class InstitutionBuilder
     }
 
     /**
-     * Build and persist a institution from XML.
+     * Build and persist a provider from XML.
      *
      * @param SimpleXMLElement $xml
-     * @param string           $institution_uuid
+     * @param string           $provider_uuid
      *
-     * @return Institution
+     * @return Provider
      */
-    public function fromXml(SimpleXMLElement $xml, $institution_uuid)
+    public function fromXml(SimpleXMLElement $xml, $provider_uuid)
     {
-        $institution = $this->em->getRepository('AppBundle:Institution')->findOneBy(array(
-            'uuid' => $institution_uuid,
+        $provider = $this->em->getRepository('AppBundle:Provider')->findOneBy(array(
+            'uuid' => $provider_uuid,
         ));
-        if ($institution === null) {
-            $institution = new Institution();
+        if ($provider === null) {
+            $provider = new Provider();
         }
-        $institution->setUuid($institution_uuid);
-        $institution->setTitle($this->getXmlValue($xml, '//atom:title'));
-        $institution->setUrl(html_entity_decode($this->getXmlValue($xml, '//pkp:institution_url'))); // &amp; -> &
-        $institution->setEmail($this->getXmlValue($xml, '//atom:email'));
-        $institution->setIssn($this->getXmlValue($xml, '//pkp:issn'));
-        $institution->setPublisherName($this->getXmlValue($xml, '//pkp:publisherName'));
-        $institution->setPublisherUrl(html_entity_decode($this->getXmlValue($xml, '//pkp:publisherUrl'))); // &amp; -> &
-        $this->em->persist($institution);
-        $this->em->flush($institution);
+        $provider->setUuid($provider_uuid);
+        $provider->setTitle($this->getXmlValue($xml, '//atom:title'));
+        $provider->setUrl(html_entity_decode($this->getXmlValue($xml, '//pkp:provider_url'))); // &amp; -> &
+        $provider->setEmail($this->getXmlValue($xml, '//atom:email'));
+        $provider->setIssn($this->getXmlValue($xml, '//pkp:issn'));
+        $provider->setPublisherName($this->getXmlValue($xml, '//pkp:publisherName'));
+        $provider->setPublisherUrl(html_entity_decode($this->getXmlValue($xml, '//pkp:publisherUrl'))); // &amp; -> &
+        $this->em->persist($provider);
+        $this->em->flush($provider);
 
-        return $institution;
+        return $provider;
     }
 }

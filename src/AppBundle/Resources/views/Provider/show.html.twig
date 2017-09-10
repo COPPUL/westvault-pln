@@ -2,19 +2,19 @@
 
 
 {% block pageheader %}
-    <h1>Institution</h1>
+    <h1>Provider</h1>
 {% endblock %}
 
 {% block body -%}
     <div class="btn-toolbar">
         <div class="btn-group pull-right">
-            <a href="{{ path('institution') }}" class="btn btn-default">
+            <a href="{{ path('provider') }}" class="btn btn-default">
                 <span class="glyphicon glyphicon-arrow-left"></span> Back
             </a>
-            <a href="{{ path('institution_edit', {'id': entity.id}) }}" class="btn btn-default ping">
+            <a href="{{ path('provider_edit', {'id': entity.id}) }}" class="btn btn-default ping">
                 <span class="glyphicon glyphicon-edit"></span> Edit
             </a>
-            <a href="{{ path('institution_ping', {'id': entity.id}) }}" class="btn btn-default ping">
+            <a href="{{ path('provider_ping', {'id': entity.id}) }}" class="btn btn-default ping">
                 <span class="glyphicon glyphicon-refresh"></span> Ping
             </a>
         </div>
@@ -64,7 +64,7 @@
             </tr>
             <tr>
                 <th>Service Document</th>
-                <td><a href="{{ url('service_document', {'On-Behalf-Of': entity.uuid, 'Institution-Url': entity.url} ) }}">XML</a></td>
+                <td><a href="{{ url('service_document', {'On-Behalf-Of': entity.uuid, 'Provider-Url': entity.url} ) }}">XML</a></td>
             </tr>
             <tr>
                 <th>Status</th>
@@ -85,7 +85,7 @@
             <tr>
                 <th>Deposits</th>
                 <td>
-                    <a href="{{ path('institution_deposits', {'id': entity.id}) }}">
+                    <a href="{{ path('provider_deposits', {'id': entity.id}) }}">
                         {{ entity.countDeposits() }}
                     </a>
                 </td>
@@ -104,10 +104,10 @@
     </table>
 
     {% if entity.status == 'unhealthy' %}
-        <p>This institution has not contacted the PLN in quite some time. You can update its status:<br/>
-            <a class='btn btn-default' href="{{ path('institution_status', {'id': entity.id, 'status': 'healthy'}) }}">Healthy</a>
-            <a class='btn btn-default' href="{{ path('institution_status', {'id': entity.id, 'status': 'triggered'}) }}">Triggered</a>
-            <a class='btn btn-default' href="{{ path('institution_status', {'id': entity.id, 'status': 'dead'}) }}">Dead (do not trigger)</a>
+        <p>This provider has not contacted the PLN in quite some time. You can update its status:<br/>
+            <a class='btn btn-default' href="{{ path('provider_status', {'id': entity.id, 'status': 'healthy'}) }}">Healthy</a>
+            <a class='btn btn-default' href="{{ path('provider_status', {'id': entity.id, 'status': 'triggered'}) }}">Triggered</a>
+            <a class='btn btn-default' href="{{ path('provider_status', {'id': entity.id, 'status': 'dead'}) }}">Dead (do not trigger)</a>
         </p>
     {% endif %}
 

@@ -2,12 +2,12 @@
 
 
 {% block pageheader %}
-    <h1>Institution Search</h1>
+    <h1>Provider Search</h1>
 {% endblock %}
 
 {% block body -%}
 
-    <form method="get" action="{{path('institution_search')}}" class="form-horizontal">
+    <form method="get" action="{{path('provider_search')}}" class="form-horizontal">
         <fieldset>
             <legend>Search</legend>
 
@@ -49,7 +49,7 @@
             <tbody>
                 {% for entity in entities %}
                     <tr>
-                        <td><a href="{{ path('institution_show', { 'id': entity.id }) }}">{{ entity.title }}</a></td>
+                        <td><a href="{{ path('provider_show', { 'id': entity.id }) }}">{{ entity.title }}</a></td>
                         <td>{{ entity.issn }}</td>
                         <td><a href="{{ entity.url }}">{{ entity.url|preg_replace('~/~', '/&#8203;')|raw }}</a></td>
                         <td>{{ entity.status }}</td>
