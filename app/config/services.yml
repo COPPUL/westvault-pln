@@ -56,7 +56,7 @@ services:
             - [ setLogger, ["@monolog.logger.processing"]]
             - [ setTemplating, ["@templating"]]
             - [ setRouter, ["@router"]]
-            - [ setPlnInstitutionTitle, ["%pln_institution_name%"]]
+            - [ setPlnProviderTitle, ["%pln_institution_name%"]]
             - [ setFilePaths, ["@filepaths"]]
 
     twig.extension.pcre:
