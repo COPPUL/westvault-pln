@@ -56,8 +56,8 @@ parameters:
     save_deposit_xml: false
 
     # customize the network message.
-    network_accepting: The PKP PLN can accept deposits from this institution.
-    network_default: The PKP PLN does not know about this institution yet.
+    network_accepting: 'The WestVault PLN can accept deposits from this provider.'
+    network_default: 'The WestVault PLN does not know about this provider yet.'
 
     # remove completed deposits, once LOCKSSOMatic reports 100% agreement.
     remove_complete_deposits: false

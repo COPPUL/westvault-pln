@@ -81,20 +81,20 @@ class SwordController extends Controller
      */
     private function checkAccess($provider_uuid)
     {
+        if($provider_uuid === \Ramsey\Uuid\Uuid::NIL) {
+            return false;
+        }
         /* @var BlackWhitelist */
         $bw = $this->get('blackwhitelist');
         $this->get('monolog.logger.sword')->info("Checking access for {$provider_uuid}");
         if ($bw->isWhitelisted($provider_uuid)) {
             $this->get('monolog.logger.sword')->info("whitelisted {$provider_uuid}");
-
             return true;
         }
         if ($bw->isBlacklisted($provider_uuid)) {
             $this->get('monolog.logger.sword')->notice("blacklisted {$provider_uuid}");
-
             return false;
         }
-
         return $this->container->getParameter('pln_accepting');
     }
 
@@ -103,11 +103,11 @@ class SwordController extends Controller
      * provider if there isn't one, otherwise update the timestamp.
      *
      * @param string $uuid
-     * @param string $url
+     * @param string $providerName
      *
      * @return Provider
      */
-    private function providerContact($uuid, $url)
+    private function providerContact($uuid, $providerName)
     {
         $logger = $this->get('monolog.logger.sword');
         $em = $this->getDoctrine()->getManager();
@@ -116,24 +116,15 @@ class SwordController extends Controller
             'uuid' => $uuid,
         ));
         if ($provider !== null) {
-            $provider->setTimestamp();
-            if ($provider->getUrl() !== $url) {
-                $logger->warning("provider URL mismatch - {$uuid} - {$provider->getUrl()} - {$url}");
-                $provider->setUrl($url);
+            if ($provider->getName() !== $providerName) {
+                $logger->warning("provider name mismatch - {$uuid} - {$provider->getName()} - {$providerName}");
+                $provider->setName($providerName);
             }
         } else {
             $provider = new Provider();
             $provider->setUuid($uuid);
-            $provider->setUrl($url);
-            $provider->setTimestamp();
-            $provider->setTitle('unknown');
-            $provider->setIssn('unknown');
-            $provider->setStatus('new');
-            $provider->setEmail('unknown@unknown.com');
+            $provider->setName($providerName);
             $em->persist($provider);
-        }
-        if ($provider->getStatus() !== 'new') {
-            $provider->setStatus('healthy');
         }
         $em->flush($provider);
 
@@ -166,14 +157,11 @@ class SwordController extends Controller
      */
     private function getNetworkMessage(Provider $provider)
     {
-        if ($provider->getOjsVersion() === null) {
-            return $this->container->getParameter('network_default');
-        }
-        if (version_compare($provider->getOjsVersion(), $this->container->getParameter('min_ojs_version'), '>=')) {
+        $bw = $this->get('blackwhitelist');
+        if ($bw->isWhitelisted($provider->getUuid())) {
             return $this->container->getParameter('network_accepting');
         }
-
-        return $this->container->getParameter('network_oldojs');
+        return $this->container->getParameter('network_default');
     }
 
     /**
@@ -193,7 +181,7 @@ class SwordController extends Controller
         $logger = $this->get('monolog.logger.sword');
 
         $obh = strtoupper($this->fetchHeader($request, 'On-Behalf-Of'));
-        $providerUrl = $this->fetchHeader($request, 'Provider-Url');
+        $providerName = $this->fetchHeader($request, 'Provider-Name');
 
         $accepting = $this->checkAccess($obh);
         $acceptingLog = 'not accepting';
@@ -201,15 +189,15 @@ class SwordController extends Controller
             $acceptingLog = 'accepting';
         }
 
-        $logger->notice("service document - {$request->getClientIp()} - {$obh} - {$providerUrl} - {$acceptingLog}");
+        $logger->notice("service document - {$request->getClientIp()} - {$obh} - {$providerName} - {$acceptingLog}");
         if (!$obh) {
-            throw new SwordException(400, "Missing On-Behalf-Of header for {$providerUrl}");
+            throw new SwordException(400, "Missing On-Behalf-Of header for {$providerName}");
         }
-        if (!$providerUrl) {
-            throw new SwordException(400, "Missing Provider-Url header for {$obh}");
+        if (!$providerName) {
+            throw new SwordException(400, "Missing Provider-Name header for {$obh}");
         }
 
-        $provider = $this->providerContact($obh, $providerUrl);
+        $provider = $this->providerContact($obh, $providerName);
 
         /* @var Response */
         $response = $this->render('AppBundle:Sword:serviceDocument.xml.twig', array(
@@ -222,6 +210,7 @@ class SwordController extends Controller
                 UrlGeneratorInterface::ABSOLUTE_URL
             ),
             'terms' => $this->getTermsOfUse(),
+            'termsUpdated' => $this->getDoctrine()->getManager()->getRepository('AppBundle:TermOfUse')->getLastUpdated(),
         ));
         /* @var Response */
         $response->headers->set('Content-Type', 'text/xml');
@@ -264,7 +253,6 @@ class SwordController extends Controller
         $xml = $this->parseXml($request->getContent());
         try {
             $provider = $this->get('providerbuilder')->fromXml($xml, $provider_uuid);
-            $provider->setStatus('healthy');
             $deposit = $this->get('depositbuilder')->fromXml($provider, $xml);
         } catch (\Exception $e) {
             throw new SwordException(500, $e->getMessage(), $e);
@@ -330,7 +318,6 @@ class SwordController extends Controller
         }
 
         $provider->setContacted(new DateTime());
-        $provider->setStatus('healthy');
         $em->flush();
 
         /* @var Response */
@@ -394,7 +381,6 @@ class SwordController extends Controller
         }
 
         $provider->setContacted(new DateTime());
-        $provider->setStatus('healthy');
         $xml = $this->parseXml($request->getContent());
         $newDeposit = $this->get('depositbuilder')->fromXml($provider, $xml);
 

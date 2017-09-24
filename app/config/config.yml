@@ -146,6 +146,9 @@ fos_user:
     db_driver: orm
     firewall_name: main
     user_class: AppUserBundle\Entity\User
+    from_email: 
+        address:        noreply@example.com
+        sender_name:    WestVault
     profile:
         form:
             type: appbundle_user_profile

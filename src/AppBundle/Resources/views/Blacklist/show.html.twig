@@ -34,18 +34,18 @@
                 <th>Created</th>
                 <td>{{ entity.created|date('Y-m-d H:i:s') }}</td>
             </tr>
-			<tr>
-				<th>Provider</th>
-				<td>
-					{% if provider %}
-						<a href="{{ path('provider_show', {'id': provider.id}) }}">
-							{{provider.title}}
-						</a>
-					{% else %}
-						(unknown)
-					{% endif %}
-				</td>
-			</tr>
+            <tr>
+                <th>Provider</th>
+                <td>
+                    {% if provider %}
+                        <a href="{{ path('provider_show', {'id': provider.id}) }}">
+                            {{provider.name}}
+                        </a>
+                    {% else %}
+                        (unknown)
+                    {% endif %}
+                </td>
+            </tr>
         </tbody>
     </table>
 {% endblock %}

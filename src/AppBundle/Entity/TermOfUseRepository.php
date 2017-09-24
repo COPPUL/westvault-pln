@@ -23,4 +23,12 @@ class TermOfUseRepository extends EntityRepository
 
         return $qb->getResult();
     }
+    
+    public function getLastUpdated() {
+        return $this->_em->createQueryBuilder()
+                ->select('MAX(t.updated)')
+                ->from('AppBundle:TermOfUse', 't')
+                ->getQuery()
+                ->getSingleScalarResult();
+    }
 }

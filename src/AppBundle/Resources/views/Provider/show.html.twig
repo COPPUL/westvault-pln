@@ -27,60 +27,12 @@
                 <td>{{ entity.uuid }}</td>
             </tr>
             <tr>
-                <th>Contacted</th>
-                <td>{{ entity.contacted|date('Y-m-d H:i:s') }}</td>
-            </tr>
-            <tr>
-                <th>Terms Accepted</th>
-                <td>{% if entity.termsAccepted %}Yes{% else %}No{% endif %}</td>
-            </tr>
-            <tr>
-                <th>Notified</th>
-                <td>
-                    {% if entity.notified %}
-                        {{ entity.notified|date('Y-m-d H:i:s') }}
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
                 <th>Title</th>
-                <td>{{ entity.title }}</td>
-            </tr>
-            <tr>
-                <th>OJS Version</th>
-                <td>{{ entity.ojsVersion }}</td>
-            </tr>
-            <tr>
-                <th>Issn</th>
-                <td>{{ entity.issn }}</td>
-            </tr>
-            <tr>
-                <th>Url</th>
-                <td><a href="{{ entity.url }}">{{ entity.url|preg_replace('~/~', '/&#8203;')|raw }}</a></td>
-            </tr>
-            <tr>
-                <th>Ping Url</th>
-                <td><a href="{{ entity.gatewayUrl }}">{{entity.gatewayUrl|preg_replace('~/~', '/&#8203;')|raw }}</a></td>
+                <td>{{ entity.name }}</td>
             </tr>
             <tr>
                 <th>Service Document</th>
-                <td><a href="{{ url('service_document', {'On-Behalf-Of': entity.uuid, 'Provider-Url': entity.url} ) }}">XML</a></td>
-            </tr>
-            <tr>
-                <th>Status</th>
-                <td>{{ entity.status }}</td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td><a href="mailto:{{ entity.email }}">{{ entity.email }}</a></td>
-            </tr>
-            <tr>
-                <th>Publisher Name</th>
-                <td>{{ entity.publisherName }}</td>
-            </tr>
-            <tr>
-                <th>Publisher Url</th>
-                <td><a href="{{ entity.publisherUrl }}">{{ entity.publisherUrl|preg_replace('~/~', '/&#8203;')|raw }}</a></td>
+                <td><a href="{{ url('service_document', {'On-Behalf-Of': entity.uuid, 'Provider-name': entity.name}) }}">XML</a></td>
             </tr>
             <tr>
                 <th>Deposits</th>
@@ -102,13 +54,5 @@
             </tr>
         </tbody>
     </table>
-
-    {% if entity.status == 'unhealthy' %}
-        <p>This provider has not contacted the PLN in quite some time. You can update its status:<br/>
-            <a class='btn btn-default' href="{{ path('provider_status', {'id': entity.id, 'status': 'healthy'}) }}">Healthy</a>
-            <a class='btn btn-default' href="{{ path('provider_status', {'id': entity.id, 'status': 'triggered'}) }}">Triggered</a>
-            <a class='btn btn-default' href="{{ path('provider_status', {'id': entity.id, 'status': 'dead'}) }}">Dead (do not trigger)</a>
-        </p>
-    {% endif %}
 
 {% endblock %}

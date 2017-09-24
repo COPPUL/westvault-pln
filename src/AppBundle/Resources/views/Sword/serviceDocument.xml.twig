@@ -1,28 +1,30 @@
 <service xmlns:dcterms="http://purl.org/dc/terms/"
-    xmlns:sword="http://purl.org/net/sword/terms/"
-    xmlns:atom="http://www.w3.org/2005/Atom"
-    xmlns:pkp="http://pkp.sfu.ca/SWORD"
-    xmlns="http://www.w3.org/2007/app">
-    
+         xmlns:sword="http://purl.org/net/sword/terms/"
+         xmlns:atom="http://www.w3.org/2005/Atom"
+         xmlns:pkp="http://pkp.sfu.ca/SWORD"
+         xmlns="http://www.w3.org/2007/app">
+
     <sword:version>2.0</sword:version>
     <sword:maxUploadSize>{{ pln_maxUploadSize }}</sword:maxUploadSize>
     <pkp:uploadChecksumType>{{ pln_uploadChecksumType }}</pkp:uploadChecksumType>
-    
+
     <pkp:pln_accepting is_accepting="{{ accepting }}">{{ message }}</pkp:pln_accepting>
 
-    <pkp:terms_of_use>
+    <pkp:terms_of_use updated="{{ termsUpdated }}">
         {% for term in terms %}
-        <pkp:{{term.keyCode}} updated="{{term.created|date('Y-m-d H:i:sP', 'UTC')}}">
-            {{term.content}}
-        </pkp:{{term.keyCode}}>
+            <pkp:{{term.keyCode}} updated="{{term.created|date('Y-m-d H:i:sP', 'UTC')}}">
+                {{term.content}}
+            </pkp:{{term.keyCode}}>
         {% endfor %}
     </pkp:terms_of_use>
-    
-    <workspace>
-        <atom:title>PKP PLN deposit for {{ onBehalfOf }}</atom:title>
-        <collection href="{{ colIri }}">
-            <accept>application/atom+xml;type=entry</accept>
-            <sword:mediation>true</sword:mediation>
-        </collection>
-    </workspace>
+
+    {% if accepting == 'Yes' %}
+        <workspace>
+            <atom:title>PKP PLN deposit for {{ onBehalfOf }}</atom:title>
+            <collection href="{{ colIri }}">
+                <accept>application/atom+xml;type=entry</accept>
+                <sword:mediation>true</sword:mediation>
+            </collection>
+        </workspace>
+    {% endif %}
 </service>

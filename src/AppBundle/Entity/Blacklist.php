@@ -33,7 +33,7 @@ class Blacklist
      * a record of it.
      *
      * @var string
-     * @Assert\Uuid
+     * @Assert\Uuid(strict=false)
      * @ORM\Column(type="string", length=36, nullable=false)
      */
     private $uuid;

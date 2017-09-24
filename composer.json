@@ -22,7 +22,7 @@
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
         "doctrine/doctrine-fixtures-bundle": "2.2.*",
-        "j20/php-uuid": "dev-master",
+        "ramsey/uuid": "^3.7",
         "twitter/bootstrap": "3.*",
         "components/jquery": "1.11.1",
         "friendsofsymfony/user-bundle": "~2.0@dev",

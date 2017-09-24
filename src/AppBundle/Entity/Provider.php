@@ -161,4 +161,8 @@ class Provider
     {
         return $this->deposits;
     }
+    
+    public function countDeposits() {
+        return $this->deposits->count();
+    }
 }
