@@ -7,7 +7,7 @@
 
 {% block body -%}
 
-<p>Showing deposits for {{ provider.title }}</p>
+<p>Showing deposits for {{ provider.name }}</p>
 
     <div class="btn-toolbar">
         <div class="btn-group pull-right">
@@ -22,8 +22,6 @@
                 <th>Deposit Uuid</th>
                 <th>Received</th>
                 <th>Action</th>
-                <th>Volume</th>
-                <th>Issue</th>
                 <th>State</th>
                 <th>PLN State</th>
             </tr>
@@ -34,8 +32,6 @@
                     <td><a href="{{ path('deposit_show', { 'id': entity.id }) }}">{{ entity.deposituuid }}</a></td>
                     <td>{% if entity.received %}{{ entity.received|date('Y-m-d H:i:s') }}{% endif %}</td>
                     <td>{{ entity.action }}</td>
-                    <td>{{ entity.volume }}</td>
-                    <td>{{ entity.issue }}</td>
                     <td>{{ entity.state }}</td>
                     <td>{{ entity.plnState }}</td>
                 </tr>

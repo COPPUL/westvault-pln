@@ -40,11 +40,6 @@ class ProviderController extends Controller
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository('AppBundle:Provider');
         $qb = $repo->createQueryBuilder('e');
-        $status = $request->query->get('status');
-        if ($status !== null) {
-            $qb->where('e.status = :status');
-            $qb->setParameter('status', $status);
-        }
         $qb->orderBy('e.id');
         $query = $qb->getQuery();
 
@@ -54,11 +49,8 @@ class ProviderController extends Controller
             $request->query->getInt('page', 1),
             25
         );
-        $statuses = $repo->statusSummary();
-
         return array(
             'entities' => $entities,
-            'statuses' => $statuses,
         );
     }
 

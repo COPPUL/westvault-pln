@@ -26,11 +26,7 @@
             </tr>
             <tr>
                 <th>Provider</th>
-                <td><a href="{{ path('provider_show', {'id': entity.provider.id}) }}">{{ entity.provider.title }}</a></td>
-            </tr>
-            <tr>
-                <th>Provider Version</th>
-                <td>{{ entity.providerVersion }}</td>
+                <td><a href="{{ path('provider_show', {'id': entity.provider.id}) }}">{{ entity.provider.name }}</a></td>
             </tr>
             <tr>
                 <th>Received</th>
@@ -43,29 +39,6 @@
             <tr>
                 <th>Action</th>
                 <td>{{ entity.action }}</td>
-            </tr>
-            <tr>
-                <th>Volume</th>
-                <td>{{ entity.volume }}</td>
-            </tr>
-            <tr>
-                <th>Issue</th>
-                <td>{{ entity.issue }}</td>
-            </tr>
-            <tr>
-                <th>Publication date</th>
-                <td>{{ entity.pubDate|date('Y-m-d H:i:s') }}</td>
-            </tr>
-            <tr>
-                <th>License</th>
-                <td>
-                    <dl class='dl-horizontal'>
-                        {% for key, value in entity.license %}
-                            <dt>{{ key }}</dt>
-                            <dd>{{ value }}</dd>
-                        {% endfor %}
-                    </dl>
-                </td>
             </tr>
             <tr>
                 <th>Checksum type</th>
@@ -108,22 +81,6 @@
             <tr>
                 <th>LOCKSS PLN state</th>
                 <td>{{ entity.plnState }}</td>
-            </tr>
-            <tr>
-                <th>Packaged size</th>
-                <td>{{ entity.packageSize }}</td>
-            </tr>
-            <tr>
-                <th>Package path</th>
-                <td>{{ entity.packagePath|preg_replace('~/~', '/&#8203;')|raw }}</td>
-            </tr>
-            <tr>
-                <th>Package checksum type</th>
-                <td>{{ entity.packageChecksumType }}</td>
-            </tr>
-            <tr>
-                <th>Package checksum value</th>
-                <td>{{ entity.packageChecksumValue }}</td>
             </tr>
             <tr>
                 <th>Deposit date</th>

@@ -9,11 +9,8 @@
                        label="Original Deposit"/>
         <atom:content type="application/zip" 
                       size="{{ deposit.size }}" 
-                      volume="{{ deposit.volume }}" 
-                      issue="{{ deposit.issue }}" 
                       checksumType="{{ deposit.checksumType }}"
-                      checksumValue="{{ deposit.checksumValue }}"
-                      pubdate="{{ deposit.pubDate|date('c') }}">
+                      checksumValue="{{ deposit.checksumValue }}">
             {{ deposit.url }}
         </atom:content>
     </atom:entry>

@@ -558,6 +558,15 @@ class Deposit
     {
         return $this->processingLog;
     }
+    
+    public function addToProcessingLog($message) {
+        if($this->processingLog) {
+            $this->processingLog .= "\n" . $message;
+        } else {
+            $this->processingLog = $message;
+        }
+        return $this;
+    }
 
     /**
      * Set harvestAttempts

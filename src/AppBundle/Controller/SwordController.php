@@ -317,7 +317,6 @@ class SwordController extends Controller
             throw new SwordException(400, 'Deposit does not belong to provider.');
         }
 
-        $provider->setContacted(new DateTime());
         $em->flush();
 
         /* @var Response */
@@ -380,7 +379,6 @@ class SwordController extends Controller
             throw new SwordException(400, 'Deposit does not belong to provider.');
         }
 
-        $provider->setContacted(new DateTime());
         $xml = $this->parseXml($request->getContent());
         $newDeposit = $this->get('depositbuilder')->fromXml($provider, $xml);
 

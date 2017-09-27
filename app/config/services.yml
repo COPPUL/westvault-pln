@@ -35,8 +35,8 @@ services:
             - [ setLogger, ["@monolog.logger"]]
             - [ setRouter, ["@router"]]
 
-    institutionbuilder:
-        class: AppBundle\Services\InstitutionBuilder
+    providerbuilder:
+        class: AppBundle\Services\ProviderBuilder
         calls:
             - [ setManager, ["@doctrine"]]
             - [ setLogger, ["@monolog.logger"]]

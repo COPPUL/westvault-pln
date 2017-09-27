@@ -154,21 +154,10 @@ class DepositBuilder
         $deposit->setChecksumValue($this->getXmlValue($xml, 'pkp:content/@checksumValue'));
         $deposit->setDepositUuid($deposit_uuid);
         $deposit->setFileType('');
-        $deposit->setIssue($this->getXmlValue($xml, 'pkp:content/@issue'));
-        $deposit->setVolume($this->getXmlValue($xml, 'pkp:content/@volume'));
-        $deposit->setPubDate(new DateTime($this->getXmlValue($xml, 'pkp:content/@pubdate')));
         $deposit->setProvider($provider);
         $deposit->setSize($this->getXmlValue($xml, 'pkp:content/@size'));
         $deposit->setUrl(html_entity_decode($this->getXmlValue($xml, 'pkp:content')));
         $deposit->setDepositReceipt($this->buildDepositReceiptUrl($deposit));
-        $ojsVersion = $this->getXmlValue($xml, 'pkp:content/@ojsVersion');
-        if($ojsVersion) {
-            $deposit->setProviderVersion($ojsVersion);
-        } else {
-            $deposit->setProviderVersion(Deposit::DEFAULT_JOURNAL_VERSION);
-        }
-        
-        $this->getLicensingInfo($deposit, $xml);
 
         if ($action === 'add') {
             $deposit->addToProcessingLog('Deposit received.');

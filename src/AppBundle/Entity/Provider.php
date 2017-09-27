@@ -56,6 +56,14 @@ class Provider
      * @ORM\Column(type="string", nullable=false)
      */
     private $name;
+    
+    /**
+     * The email of the provider.
+     *
+     * @var string
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $email;
 
     /**
      * The provider's deposits.
@@ -164,5 +172,28 @@ class Provider
     
     public function countDeposits() {
         return $this->deposits->count();
+    }
+
+    /**
+     * Set email
+     *
+     * @param string $email
+     * @return Provider
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * Get email
+     *
+     * @return string 
+     */
+    public function getEmail()
+    {
+        return $this->email;
     }
 }

@@ -101,12 +101,7 @@ class ProviderBuilder
             $provider = new Provider();
         }
         $provider->setUuid($provider_uuid);
-        $provider->setTitle($this->getXmlValue($xml, '//atom:title'));
-        $provider->setUrl(html_entity_decode($this->getXmlValue($xml, '//pkp:provider_url'))); // &amp; -> &
         $provider->setEmail($this->getXmlValue($xml, '//atom:email'));
-        $provider->setIssn($this->getXmlValue($xml, '//pkp:issn'));
-        $provider->setPublisherName($this->getXmlValue($xml, '//pkp:publisherName'));
-        $provider->setPublisherUrl(html_entity_decode($this->getXmlValue($xml, '//pkp:publisherUrl'))); // &amp; -> &
         $this->em->persist($provider);
         $this->em->flush($provider);
 
