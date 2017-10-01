@@ -161,11 +161,10 @@ class HarvestCommand extends AbstractProcessingCmd
                 throw new Exception($message);
             }
             
-            $expectedSize = ceil($reportedSize / 1000); // This is how the pln plugin does it.
-            $difference = abs($expectedSize - $deposit->getSize()) / max([$expectedSize, $deposit->getSize()]);
+            $difference = abs($reportedSize - $deposit->getSize()) / max([$reportedSize, $deposit->getSize()]);
             if ($difference > self::FILE_SIZE_THRESHOLD) {
-                $deposit->addErrorLog("Expected file size {$expectedSize} is not close to reported size {$reportedSize}");
-                $this->logger->warning("Harvest - {$deposit->getUrl()} - Expected file size {$expectedSize} is not close to reported size {$reportedSize}");
+                $deposit->addErrorLog("Expected file size {$deposit->getSize()} is not close to reported size {$reportedSize}");
+                $this->logger->warning("Harvest - {$deposit->getUrl()} - Expected file size {$deposit->getSize()} is not close to reported size {$reportedSize}");
             }
         } catch (RequestException $e) {
             $response = $e->getResponse();
