@@ -259,6 +259,10 @@ class Deposit
     {
         return $this->depositUuid;
     }
+    
+    public function getFileName() {
+        return $this->depositUuid;
+    }
 
     /**
      * Set received
@@ -442,6 +446,11 @@ class Deposit
     public function getErrorLog()
     {
         return $this->errorLog;
+    }
+    
+    public function addErrorLog($message) {
+        $this->errorLog[] = $message;
+        $this->errorCount++;
     }
 
     /**
