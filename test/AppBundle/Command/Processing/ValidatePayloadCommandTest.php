@@ -7,7 +7,7 @@ use AppBundle\Utility\AbstractCommandTestCase;
 class ValidatePayloadCommandTest extends AbstractCommandTestCase {
 	
 	public function getCommand() {
-		return new ValidatePayloadCommand();
+		return new ValidateChecksumsCommand();
 	}
 
 	public function getCommandName() {
