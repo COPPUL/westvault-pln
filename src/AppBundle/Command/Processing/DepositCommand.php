@@ -66,7 +66,7 @@ class DepositCommand extends AbstractProcessingCmd
      */
     public function processingState()
     {
-        return 'reserialized';
+        return 'virus-checked';
     }
 
     /**
