@@ -133,7 +133,7 @@ class AuContainer
     {
         $size = 0;
         foreach ($this->deposits as $deposit) {
-            $size += $deposit->getPackageSize();
+            $size += $deposit->getSize();
         }
 
         return $size;
