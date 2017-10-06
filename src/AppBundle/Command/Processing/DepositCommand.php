@@ -66,7 +66,7 @@ class DepositCommand extends AbstractProcessingCmd
      */
     public function processingState()
     {
-        return 'virus-checked';
+        return 'organized';
     }
 
     /**

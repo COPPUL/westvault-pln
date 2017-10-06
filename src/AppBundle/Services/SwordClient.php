@@ -223,7 +223,7 @@ class SwordClient
         $client = $this->getClient();
         $headers = array(
             'On-Behalf-Of' => $this->serverUuid,
-            'Provider-Url' => $provider->getUrl(),
+            'Provider-Name' => $provider->getName(),
         );
         try {
             $response = $client->get($this->sdIri, ['headers' => $headers]);

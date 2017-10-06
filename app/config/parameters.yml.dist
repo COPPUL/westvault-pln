@@ -1,66 +1,31 @@
-# This file is a "template" of what your parameters.yml file should look like
-# Set parameters here that may be different on each deployment target of the app, e.g. development, staging, production.
-# http://symfony.com/doc/current/best_practices/configuration.html#infrastructure-related-configuration
+# This file is auto-generated during the composer install
 parameters:
-    database_host:     127.0.0.1
-    database_port:     ~
-    database_name:     symfony
-    database_user:     root
-    database_password: ~
-
-    mailer_transport:  smtp
-    mailer_host:       127.0.0.1
-    mailer_user:       ~
-    mailer_password:   ~
-
-    # A secret key that's used to generate certain security-related tokens
-    secret:            ThisTokenIsNotSoSecretChangeIt
-
+    database_host: 127.0.0.1
+    database_port: null
+    database_name: westvaultpln
+    database_user: westvaultpln
+    database_password: pln123
+    mailer_transport: smtp
+    mailer_host: 127.0.0.1
+    mailer_user: null
+    mailer_password: null
+    secret: 8e7db5d2b3a93c288ad3c2d8b36bf3c3a1211c6e
     pln_accepting: false
-    
-    # maximum deposit file size, in kb
     pln_maxUploadSize: 1000000
-
-    # maximum AU size, in kb
     pln_maxAuSize: 100000000
-
     pln_uploadChecksumType: SHA-1
     pln_defaultLocale: en-US
-
-    # All deposits to the PLN will use the same institution name, to enable the
-    # LOCKSS subscription manager.
-    pln_institution_name: PKP PLN Deposits from OJS
-
-    # File path where data will be stored and processed.
+    pln_institution_name: 'PKP PLN Deposits from OJS'
     pln_data_dir: data
-
-    # path to clamdscan
     clamdscan_path: /usr/bin/clamdscan
-
-    # URI for LOCKSSOMatic's service document.
-    lockssomatic_sd_iri: 'http://lom.dv/web/app_dev.php/api/sword/2.0/sd-iri'
-
-    # Staging Server's UUID for LOCKSSOMatic
-    staging_server_uuid: ~
-
-    # Default locale for terms of use
-    terms_of_use_default_locale: 'en-US'
-
-    # override the command-line router URL generator.    
-    router.request_context.host: pkppln.dev
+    lockssomatic_sd_iri: http://localhost:8181/lockssomatic/web/app_dev.php/api/sword/2.0/sd-iri
+    staging_server_uuid: 1AAB46A6-DA24-410A-9344-CBD9C1991B70
+    terms_of_use_default_locale: en-US
+    router.request_context.host: 'localhost:8181'
     router.request_context.scheme: http
-    router.request_context.base_url: /web
-
-    # set to true to save the SWORD deposit document to the file system when
-    # creating a deposit in LOM.
-    save_deposit_xml: false
-
-    # customize the network message.
+    router.request_context.base_url: /westvaultpln/web/app_dev.php
+    save_deposit_xml: true
     network_accepting: 'The WestVault PLN can accept deposits from this provider.'
     network_default: 'The WestVault PLN does not know about this provider yet.'
-
-    # remove completed deposits, once LOCKSSOMatic reports 100% agreement.
     remove_complete_deposits: false
-
-    # maximum number of harvest attempts
     max_harvest_attempts: 5
