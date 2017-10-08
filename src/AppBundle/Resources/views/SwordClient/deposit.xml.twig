@@ -14,8 +14,8 @@
         size="{{ (deposit.size) }}"
         checksumType="{{ deposit.checksumType }}"
         checksumValue="{{ deposit.checksumValue }}"
-        pkp:pubDate="{{deposit.received|date}}"
-        pkp:providerTitle="{{plnProviderTitle}}">
+        pkp:journalTitle="{{ plnProviderTitle }}"
+        pkp:pubDate="{{deposit.received|date}}">
         {{ url('fetch', { 'providerUuid': deposit.provider.uuid, 'depositUuid': deposit.depositUuid }) }}
         <lom:property name="base_url" value="{{ url('home') }}" />
         <lom:property name="permission_url" value="{{ url('lockss_permission') }}" />

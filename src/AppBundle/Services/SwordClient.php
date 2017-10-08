@@ -255,8 +255,8 @@ class SwordClient
     {
         $this->serviceDocument($deposit->getProvider());
         $xml = $this->templating->render('AppBundle:SwordClient:deposit.xml.twig', array(
-            'title' => 'Deposit from OJS part '.$deposit->getAuContainer()->getId(),
-            'publisher' => 'Public Knowledge Project Staging Server',
+            'title' => 'Deposit from WestVault part '.$deposit->getAuContainer()->getId(),
+            'publisher' => 'WestVault Staging Server',
             'deposit' => $deposit,
             'baseUri' => $this->router->generate('home', array(), UrlGeneratorInterface::ABSOLUTE_URL),
             'plnProviderTitle' => $this->plnProviderTitle,

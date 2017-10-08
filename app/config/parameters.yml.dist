@@ -15,7 +15,7 @@ parameters:
     pln_maxAuSize: 100000000
     pln_uploadChecksumType: SHA-1
     pln_defaultLocale: en-US
-    pln_institution_name: 'PKP PLN Deposits from OJS'
+    pln_institution_name: 'WestVault Preserved Content'
     pln_data_dir: data
     clamdscan_path: /usr/bin/clamdscan
     lockssomatic_sd_iri: http://localhost:8181/lockssomatic/web/app_dev.php/api/sword/2.0/sd-iri
