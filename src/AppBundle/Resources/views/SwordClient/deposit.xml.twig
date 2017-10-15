@@ -11,10 +11,12 @@
     </summary>
     <!-- @size is the file size in kB (1,000 bytes) -->
     <lom:content 
-        size="{{ (deposit.size) }}"
+        size="{{ deposit.size / 1000 | round(0, 'floor') }}"
         checksumType="{{ deposit.checksumType }}"
         checksumValue="{{ deposit.checksumValue }}"
         pkp:journalTitle="{{ plnProviderTitle }}"
+        pkp:publisher="{{publisher}}"
+        pkp:publisherName="{{deposit.provider.name}}"
         pkp:pubDate="{{deposit.received|date}}">
         {{ url('fetch', { 'providerUuid': deposit.provider.uuid, 'depositUuid': deposit.depositUuid }) }}
         <lom:property name="base_url" value="{{ url('home') }}" />
