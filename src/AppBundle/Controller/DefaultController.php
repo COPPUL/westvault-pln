@@ -98,7 +98,7 @@ class DefaultController extends Controller {
     /**
      * Fetch a processed and packaged deposit.
      *
-     * @Route("/fetch/{providerUuid}/{depositUuid}.zip", name="fetch")
+     * @Route("/fetch/{providerUuid}/{depositUuid}", name="fetch")
      *
      * @param Request $request
      * @param string  $providerUuid
