@@ -262,7 +262,7 @@ class SwordClient
             'plnProviderTitle' => $this->plnProviderTitle,
         ));
         if ($this->saveDepositXml) {
-            $atomPath = $this->filePaths->getStagingDir($deposit->getProvider()).'/'.$deposit->getDepositUuid().'.xml';
+            $atomPath = $this->filePaths->getHarvestDir($deposit->getProvider()).'/'.$deposit->getDepositUuid().'.xml';
             file_put_contents($atomPath, $xml);
         }
         try {

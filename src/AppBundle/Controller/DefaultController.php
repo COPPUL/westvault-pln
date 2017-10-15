@@ -116,69 +116,20 @@ class DefaultController extends Controller {
         $deposit = $em->getRepository('AppBundle:Deposit')->findOneBy(array('depositUuid' => $depositUuid));
         if (!$deposit) {
             $logger->error("fetch - 404 DEPOSIT NOT FOUND - {$request->getClientIp()} - {$providerUuid} - {$depositUuid}");
-            throw new NotFoundHttpException("{$providerUuid}/{$depositUuid}.zip does not exist.");
+            throw new NotFoundHttpException("Deposit {$providerUuid}/{$depositUuid} does not exist.");
         }
         if ($deposit->getProvider()->getId() !== $provider->getId()) {
             $logger->error("fetch - 400 JOURNAL MISMATCH - {$request->getClientIp()} - {$providerUuid} - {$depositUuid}");
             throw new BadRequestHttpException("The requested Provider ID does not match the deposit's provider ID.");
         }
-        $path = $this->get('filepaths')->getStagingBagPath($deposit);
+        $path = $this->get('filepaths')->getHarvestFile($deposit);
         $fs = new Filesystem();
         if (!$fs->exists($path)) {
             $logger->error("fetch - 404 PACKAGE NOT FOUND - {$request->getClientIp()} - {$providerUuid} - {$depositUuid}");
-            throw new NotFoundHttpException("{$providerUuid}/{$depositUuid}.zip does not exist.");
+            throw new NotFoundHttpException("File {$providerUuid}/{$depositUuid} does not exist.");
         }
 
         return new BinaryFileResponse($path);
-    }
-
-    /**
-     * The ONIX-PH was hosted at /onix.xml which was a dumb thing. Redirect to
-     * the proper URL at /feeds/onix.xml.
-     *
-     * This URI must be public in security.yml
-     *
-     * @Route("/onix.xml")
-     */
-    public function onyxRedirect() {
-        return new RedirectResponse(
-                $this->generateUrl('onix', array('_format' => 'xml')), Response::HTTP_MOVED_PERMANENTLY
-        );
-    }
-
-    /**
-     * Fetch the current ONYX-PH metadata file and serve it up. The file is big
-     * and nasty. It isn't generated on the fly - there must be a cron tab to
-     * generate the file once in a while.
-     *
-     * This URI must be public in security.yml
-     *
-     * @see http://www.editeur.org/127/ONIX-PH/
-     *
-     * @param Request $request
-     * @Route("/feeds/onix.{_format}", name="onix", requirements={"_format":"xml|csv"})
-     */
-    public function onyxFeedAction($_format) {
-        $path = $this->container->get('filepaths')->getOnixPath($_format);
-        $fs = new Filesystem();
-        if (!$fs->exists($path)) {
-            $this->container->get('logger')->critical("The ONIX-PH file could not be found at {$path}");
-            throw new NotFoundHttpException('The ONIX-PH file could not be found.');
-        }
-
-        $contentType = '';
-        switch ($_format) {
-            case 'xml':
-                $contentType = 'text/xml';
-                break;
-            case 'csv':
-                $contentType = 'text/csv';
-                break;
-        }
-
-        return new BinaryFileResponse($path, 200, array(
-            'Content-Type' => $contentType,
-        ));
     }
 
     /**

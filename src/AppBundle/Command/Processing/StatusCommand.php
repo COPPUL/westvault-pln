@@ -91,8 +91,6 @@ class StatusCommand extends AbstractProcessingCmd
         if ($status === 'agreement' && $this->cleanup) {
             $this->logger->notice("Deposit complete. Removing processing files for deposit {$deposit->getId()}.");
             unlink($this->filePaths->getHarvestFile($deposit));
-            $this->deltree($this->filePaths->getProcessingBagPath($deposit));
-            // unlink($this->filePaths->getStagingBagPath($deposit));
         }
 
         return $status === 'agreement';
