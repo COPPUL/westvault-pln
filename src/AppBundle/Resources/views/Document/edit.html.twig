@@ -1,0 +1,13 @@
+{% extends '::base.html.twig' %}
+
+    
+{% block pageheader %}
+    <h1>Document Edit</h1>
+{% endblock %}
+    
+{% block body -%}
+
+	<p>Images are not supported in help documents.</p>
+    {{ form(edit_form) }}
+
+{% endblock %}

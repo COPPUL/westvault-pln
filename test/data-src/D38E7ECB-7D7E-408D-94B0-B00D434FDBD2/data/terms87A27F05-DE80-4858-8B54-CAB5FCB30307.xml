@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<entry xmlns="http://www.w3.org/2005/Atom" xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:pkp="plnplugin">
+    <pkp:terms_of_use>
+        <pkp:plugins.generic.pln.terms_of_use.jm_has_authority updated="2015-11-30 18:34:43+00:00"
+            agreed="2016-04-12T16:44:09+00:00"> I have the authority to include this journal's
+            content in a secure preservation network and, if and when necessary, to make the content
+            accessible in the PKP-PLN and its successors. </pkp:plugins.generic.pln.terms_of_use.jm_has_authority>
+        <pkp:plugins.generic.pln.terms_of_use.pkp_can_use_address
+            updated="2015-11-30 18:34:43+00:00" agreed="2016-04-12T16:44:09+00:00"> I agree to allow
+            the PKP-PLN to include this journal's title and ISSN, and the email address of the
+            Primary Contact, with the preserved journal content. </pkp:plugins.generic.pln.terms_of_use.pkp_can_use_address>
+    </pkp:terms_of_use>
+</entry>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE issue PUBLIC "-//PKP//OJS Articles and Issues XML//EN" "http://pkp.sfu.ca/ojs/dtds/2.4.8/native.dtd">
+<issue published="true" identification="num_vol_year" current="false">
+	<volume>3</volume>
+	<number>1</number>
+	<year>2012</year>
+	<date_published>2014-07-13</date_published>
+	<open_access/>
+	<section>
+		<title locale="en_US">Editorial</title>
+		<abbrev locale="en_US">EDIT</abbrev>
+		<identify_type locale="en_US">Editorial</identify_type>
+		<article locale="en_US" language="en">
+			<title locale="en_US">One article, no content</title>
+			<abstract locale="en_US">One article lacking content.</abstract>
+			<author primary_contact="true">
+				<firstname>Bob</firstname>
+				<middlename>R</middlename>
+				<lastname>Terwilliger</lastname>
+				<affiliation locale="en_US">Testology, U of Testing</affiliation>
+				<country>CA</country>
+				<email>test@example.com</email>
+			</author>
+			<pages>1</pages>
+			<date_published>2014-07-13</date_published>
+			<permissions>
+				<license_url>http://creativecommons.org/licenses/by-nc-sa/4.0</license_url>
+				<copyright_holder locale="en_US">Bob R Terwilliger</copyright_holder>
+				<copyright_year>1969</copyright_year>
+			</permissions>
+		</article>
+	</section>
+</issue>

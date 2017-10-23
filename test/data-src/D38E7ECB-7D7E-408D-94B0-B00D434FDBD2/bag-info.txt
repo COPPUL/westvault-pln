@@ -1,0 +1,13 @@
+External-Identifier: D38E7ECB-7D7E-408D-94B0-B00D434FDBD2
+PKP-PLN-Deposit-UUID: D38E7ECB-7D7E-408D-94B0-B00D434FDBD2
+PKP-PLN-Deposit-Received: 2016-05-06T10:29:00-07:00
+PKP-PLN-Deposit-Volume: 1
+PKP-PLN-Deposit-Issue: 2
+PKP-PLN-Deposit-PubDate: 2016-05-06T00:00:00-07:00
+PKP-PLN-Journal-UUID: C0A65967-32BD-4EE8-96DE-C469743E563A
+PKP-PLN-Journal-Title: I J Testing
+PKP-PLN-Journal-ISSN: 1234-1234
+PKP-PLN-Journal-URL: http://journal.example.com
+PKP-PLN-Journal-Email: test@example.com
+PKP-PLN-Publisher-Name: Test Publisher
+PKP-PLN-Publisher-URL: http://example.com

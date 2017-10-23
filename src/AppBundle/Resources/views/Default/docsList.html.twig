@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+
+{% block pageheader %}
+    <h1>PKP PLN Help Documents</h1>
+{% endblock %}
+
+{% block body %}
+
+	<dl>
+	{% for doc in docs %}
+		<dt>
+			{{doc.title}}
+		</dt>
+		<dd>
+			{{doc.summary|nl2br}}<br/>
+			Updated {{ doc.updated|date }}. <a class='text-right' href='{{ path('doc_view', {'path': doc.path}) }}'>Read more</a>
+		</dd>
+	{% endfor %}
+	</dl>
+	
+{% endblock %}

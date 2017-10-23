@@ -1,0 +1,60 @@
+{% extends '::base.html.twig' %}
+
+
+{% block pageheader %}
+    <h1>Blacklist Search</h1>
+{% endblock %}
+
+{% block body -%}
+
+    <form method="get" action="{{path('blacklist_search')}}" class="form-horizontal">
+        <fieldset>
+            <legend>Search</legend>
+
+            <div class='form-group'>
+                <label class='col-sm-2 control-label' for='q'>Search term</label>
+                <div class='col-sm-10'>
+                    <div class='input-group'>
+                        <input type='text' name='q' id='q' class='form-control' value='{{ q }}'>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="submit">
+                                <span class='glyphicon glyphicon-search'></span>
+                                Search
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+
+    {% if q != '' %}
+        <p>Found {{ count }} results for <b> {{ q }} </b>.</p>
+
+        <div class="navigation">
+            {{ knp_pagination_render(entities) }}
+        </div>
+
+        <table class="records_list table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>UUID</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entity in entities %}
+                    <tr>
+                        <td><a href="{{ path('blacklist_show', { 'id': entity.id }) }}">{{ entity.uuid }}</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="navigation">
+            {{ knp_pagination_render(entities) }}
+        </div>
+
+    {% endif %}
+{% endblock %}
+
+

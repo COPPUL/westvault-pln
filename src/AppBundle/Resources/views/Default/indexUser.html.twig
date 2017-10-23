@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    {% if not is_granted('ROLE_USER') %}
+        <div class='jumbotron'>
+            <h1>PKP Private LOCKSS Network</h1>
+            <p>This is the administrative front-end for the PKP-PLN. End-users 
+                wanting more information, or wanting to join the PLN 
+                should check out <a href="http://pkp.sfu.ca/pkp-lockss">pkp.sfu.ca/pkp-lockss</a>. 
+            </p>
+        </div>
+    {% else %}
+        <div class='row'>
+            <p>The staging server's URL is <a href='{{ url('service_document') }}'>{{ url('service_document') }}</a></p>
+        </div>
+    {% endif %}
+
+
+
+{% endblock %}

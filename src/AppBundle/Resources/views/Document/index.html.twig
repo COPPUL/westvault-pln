@@ -1,0 +1,43 @@
+{% extends '::base.html.twig' %}
+
+
+{% block pageheader %}
+    <h1>Document List</h1>
+    <p class="count">
+        Displaying {{ entities|length }} records of {{ entities.getTotalItemCount }} total.
+    </p>
+{% endblock %}
+
+{% block body -%}
+
+        <div class="btn-toolbar pull-right">
+        <div class="btn-group">
+            <a href="{{ path('admin_document_new') }}" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> New</a>
+        </div>
+    </div>
+        <table class="table table-striped table-condensed table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Path</th>
+                <th>Summary</th>
+                <th>Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for entity in entities %}
+            <tr>
+                <td><a href="{{ path('admin_document_show', { 'id': entity.id }) }}">{{ entity.title }}</a></td>
+                <td>{{ entity.path }}</td>
+                <td>{{ entity.summary }}</td>
+                <td>{% if entity.updated %}{{ entity.updated|date('Y-m-d H:i:s') }}{% endif %}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="navigation">
+        {{ knp_pagination_render(entities) }}
+    </div>
+
+{% endblock %}

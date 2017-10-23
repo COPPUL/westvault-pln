@@ -1,0 +1,10 @@
+[
+{% for term in terms %}
+    {
+    "id": "{{ term.keyCode }}",
+    "lang": "{{ term.langCode }}",
+    "pubDate": "{{ term.updated|date('Y-m-d\TH:i:sO') }}",
+    "description": "{{ term.content }}"
+    }{% if not loop.last %},{% endif %}
+{% endfor %}
+]

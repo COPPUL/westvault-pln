@@ -1,0 +1,108 @@
+{% extends '::base.html.twig' %}
+
+
+{% block pageheader %}
+    <h1>Deposit</h1>
+{% endblock %}
+
+{% block body -%}
+    <div class="btn-toolbar">
+        <div class="btn-group pull-right">
+            <a href="{{ path('deposit') }}" class="btn btn-default">
+                <span class="glyphicon glyphicon-arrow-left"></span> Back
+            </a>
+        </div>
+    </div>
+
+    <table class="record_properties table table-striped table-bordered table-hover">
+        <tbody>
+            <tr>
+                <th>File type</th>
+                <td>{{ entity.filetype }}</td>
+            </tr>
+            <tr>
+                <th>Deposit uuid</th>
+                <td>{{ entity.deposituuid }}</td>
+            </tr>
+            <tr>
+                <th>Provider</th>
+                <td><a href="{{ path('provider_show', {'id': entity.provider.id}) }}">{{ entity.provider.name }}</a></td>
+            </tr>
+            <tr>
+                <th>Received</th>
+                <td>{{ entity.received|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
+                <th>Harvest Attempts</th>
+                <td>{{ entity.harvestAttempts }}</td>
+            </tr>
+            <tr>
+                <th>Action</th>
+                <td>{{ entity.action }}</td>
+            </tr>
+            <tr>
+                <th>Checksum type</th>
+                <td>{{ entity.checksumType }}</td>
+            </tr>
+            <tr>
+                <th>Checksum value</th>
+                <td>{{ entity.checksumValue }}</td>
+            </tr>
+            <tr>
+                <th>Url</th>
+                <td><a href="{{ entity.url }}">{{ entity.url|preg_replace('~/~', '/&#8203;')|raw }}</a></td>
+            </tr>
+            <tr>
+                <th>Size (kb)</th>
+                <td>{{ entity.size }}</td>
+            </tr>
+            <tr>
+                <th>Processing State</th>
+                <td>{{ entity.state }}</td>
+            </tr>
+            <tr>
+                <th>Staging server deposit statement</th>
+                <td><a href="{{ url('statement', {'provider_uuid': entity.provider.uuid, 'deposit_uuid': entity.depositUuid }) }}">{{ url('statement', {'provider_uuid': entity.provider.uuid, 'deposit_uuid': entity.depositUuid })|preg_replace('~/~', '/&#8203;')|raw }}</a></td>
+            </tr>
+            <tr>
+                <th>Processing Errors</th>
+                <td>
+                    {% if entity.errorLog | length == 0 %}
+                        None
+                    {% else %}
+                        <ol>
+                            {% for error in entity.errorLog %}
+                                <li>{{ error|nl2br }}</li>
+                                {% endfor %}
+                        </ol>
+                        <p><a href="https://curl.haxx.se/libcurl/c/libcurl-errors.html">cURL errors are described here</a>.</p>
+                    {% endif %}
+                </td>
+            <tr>
+                <th>LOCKSS PLN state</th>
+                <td>{{ entity.plnState }}</td>
+            </tr>
+            <tr>
+                <th>Deposit date</th>
+                <td>{{ entity.depositDate|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
+                <th>LOCKSSOMatic Deposit receipt</th>
+                <td><a href="{{ entity.depositReceipt }}">{{ entity.depositReceipt|preg_replace('~/~', '/&#8203;')|raw }}</a></td>
+            </tr>
+            <tr>
+                <th>Staged deposit</th>
+                <td><a href='{{ url('fetch', { 'providerUuid': entity.provider.uuid, 'depositUuid': entity.depositUuid }) }}'>
+                        {{ url('fetch', { 'providerUuid': entity.provider.uuid, 'depositUuid': entity.depositUuid }) }}
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <th>Processing log</th>
+                <td>
+                    {{- entity.processingLog|nl2br -}}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

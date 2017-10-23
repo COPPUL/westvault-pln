@@ -1,0 +1,31 @@
+# This file is auto-generated during the composer install
+parameters:
+    database_host: 127.0.0.1
+    database_port: null
+    database_name: westvaultpln
+    database_user: westvaultpln
+    database_password: pln123
+    mailer_transport: smtp
+    mailer_host: 127.0.0.1
+    mailer_user: null
+    mailer_password: null
+    secret: 8e7db5d2b3a93c288ad3c2d8b36bf3c3a1211c6e
+    pln_accepting: false
+    pln_maxUploadSize: 1000000
+    pln_maxAuSize: 100000000
+    pln_uploadChecksumType: SHA-1
+    pln_defaultLocale: en-US
+    pln_institution_name: 'WestVault Preserved Content'
+    pln_data_dir: data
+    clamdscan_path: /usr/bin/clamdscan
+    lockssomatic_sd_iri: http://localhost:8181/lockssomatic/web/app_dev.php/api/sword/2.0/sd-iri
+    staging_server_uuid: 1AAB46A6-DA24-410A-9344-CBD9C1991B70
+    terms_of_use_default_locale: en-US
+    router.request_context.host: 'localhost:8181'
+    router.request_context.scheme: http
+    router.request_context.base_url: /westvaultpln/web/app_dev.php
+    save_deposit_xml: true
+    network_accepting: 'The WestVault PLN can accept deposits from this provider.'
+    network_default: 'The WestVault PLN does not know about this provider yet.'
+    remove_complete_deposits: false
+    max_harvest_attempts: 5

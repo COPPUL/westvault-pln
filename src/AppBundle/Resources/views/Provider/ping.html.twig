@@ -1,0 +1,71 @@
+{% extends '::base.html.twig' %}
+
+
+{% block pageheader %}
+    <h1>Provider</h1>
+{% endblock %}
+
+{% block body -%}
+    <div class="btn-toolbar">
+        <div class="btn-group pull-right">
+            <a href="{{ path('provider_show', {'id': entity.id}) }}" class="btn btn-default">
+                <span class="glyphicon glyphicon-arrow-left"></span> Back
+            </a>
+            <a href="{{ path('provider_ping', {'id': entity.id}) }}" class="btn btn-default ping">
+                <span class="glyphicon glyphicon-refresh"></span> Ping
+            </a>
+        </div>
+    </div>
+
+    <table class="record_properties table table-striped table-bordered table-hover">
+        <tbody>
+            <tr>
+                <th>Title</th>
+                <td>{{ entity.title }}</td>
+            </tr>
+            <tr>
+                <th>Url</th>
+                <td><a href="{{ entity.url }}">{{ entity.url|preg_replace('~/~', '/&#8203;')|raw }}</a></td>
+            </tr>
+            <tr>
+                <th>Ping Url</th>
+                <td><a href="{{ entity.getGatewayUrl() }}">{{ entity.getGatewayUrl()|preg_replace('~/~', '/&#8203;')|raw }}</a></td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ entity.status }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+	<h2>Ping Result</h2>
+    <dl class="dl-horizontal">
+		<dt>OJS Version</dt>
+		<dd>{{ ping.getOjsRelease() }}</dd>
+		<dt>Plugin Version</dt>
+		<dd>{{ ping.getPluginReleaseVersion() }}</dd>
+		<dt>Plugin Date</dt>
+		<dd>{{ ping.getPluginReleaseDate() }}</dd>
+		<dt>Plugin Current</dt>
+		<dd>{{ ping.isPluginCurrent() }}</dd>
+		<dt>Terms accepted</dt>
+		<dd>{{ ping.areTermsAccepted() }}</dd>		
+		<dt>Provider Title</dt>
+		<dd>{{ ping.getProviderTitle() }}</dd>
+		<dt>Article Count</dt>
+		<dd>{{ ping.getArticleCount() }}</dd>
+		<dt>Recent Articles</dt>
+		<dd>
+			<ul class='list-unstyled'>
+				{% for article in ping.getArticleTitles() %}
+					<li>
+						{{ article.title }} <br />
+						<span class='text-muted'>{{article.date}}</span>
+					</li>
+				{% endfor %}
+			</ul>
+		</dd>
+	</dl>
+
+
+{% endblock %}

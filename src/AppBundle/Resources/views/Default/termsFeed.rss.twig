@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+    <channel>
+        <title>PKP PLN Terms of Use</title>
+        <description>The terms of service for the PKP PLN.</description>
+        <link>{{ url('feed_terms', {'_format': 'rss'}) }}</link>
+        <pubDate>{{ terms[0].updated|date('D, d M y H:i:s O') }}</pubDate>
+        {% for term in terms %}
+            <item>
+                <title>Term updated</title>
+                <link href="{{ url('termofuse_show', {'id': term.id}) }}" />
+                <pubDate>{{ term.updated|date('D, d M y H:i:s O') }}</pubDate>
+                <description xml:lang="{{ term.langCode }}">
+                    {{ term.content }}
+                </description>
+            </item>
+        {% endfor %}
+    </channel>
+</rss>

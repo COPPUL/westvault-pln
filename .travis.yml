@@ -1,0 +1,33 @@
+language: php
+
+php:
+  - 5.4
+  - 5.5
+  - 5.6
+  - 7.0
+
+cache: apt
+
+env:
+    global:
+        - SYMFONY_ENV=test
+        - CLAMSCAN_BIN="/usr/bin/clamdscan"
+
+before_script:
+  - sudo apt-get update
+  - sudo apt-get install clamav clamav-daemon -y
+  - sudo freshclam -v
+  - sudo service clamav-daemon restart
+
+  # make sure clamscan runs properly.
+  - clamscan composer.json
+
+  # make sure clamdscan also runs properly.
+  - clamdscan composer.lock
+
+  - composer install -n -o
+
+  - echo 'date.timezone = America/Vancouver' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+
+script:
+  - ./bin/phpunit

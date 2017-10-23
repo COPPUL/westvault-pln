@@ -1,0 +1,26 @@
+<entry xmlns="http://www.w3.org/2005/Atom"
+        xmlns:dcterms="http://purl.org/dc/terms/"
+        xmlns:lom="http://lockssomatic.info/SWORD2"
+        xmlns:pkp="http://pkp.sfu.ca/SWORD">
+    <title>{{ title }}</title>
+    <id>urn:uuid:{{ deposit.depositUuid }}</id>
+    <updated>{{ deposit.received|date('Y-m-d') }}</updated>
+    <author><name>{{ deposit.provider.name }}</name></author>
+    <summary type="text">
+        Content deposited to LOCKSS-O-Matic via the PKP PLN Staging Server.
+    </summary>
+    <!-- @size is the file size in kB (1,000 bytes) -->
+    <lom:content 
+        size="{{ deposit.size / 1000 | round(0, 'floor') }}"
+        checksumType="{{ deposit.checksumType }}"
+        checksumValue="{{ deposit.checksumValue }}"
+        pkp:journalTitle="{{ plnProviderTitle }}"
+        pkp:publisher="{{publisher}}"
+        pkp:publisherName="{{deposit.provider.name}}"
+        pkp:pubDate="{{deposit.received|date}}">
+        {{ url('fetch', { 'providerUuid': deposit.provider.uuid, 'depositUuid': deposit.depositUuid }) }}
+        <lom:property name="base_url" value="{{ url('home') }}" />
+        <lom:property name="permission_url" value="{{ url('lockss_permission') }}" />
+        <lom:property name="container_number" value="{{ deposit.aucontainer.id }}"/>
+    </lom:content>
+</entry>

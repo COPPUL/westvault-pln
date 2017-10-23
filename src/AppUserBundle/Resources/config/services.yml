@@ -1,0 +1,11 @@
+services:
+    app.form.profile:
+        class: AppUserBundle\Form\ProfileType
+        tags:
+            - { name: form.type, alias: appbundle_user_profile }
+            
+    app.form.change_password:
+        class: AppUserBundle\Form\PasswordType
+        tags:
+            - { name: form.type, alias: appbundle_user_password }
+            

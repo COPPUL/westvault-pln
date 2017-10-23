@@ -1,0 +1,117 @@
+{% extends '::base.html.twig' %}
+
+
+{% block pageheader %}
+    <h1>Delete Provider</h1>
+
+    <p>
+        {% if entity.countDeposits() > 0 %}
+            Once a provider has made deposits it cannot be deleted.
+        {% else %}
+            Are you sure you want to delete this provider?
+        {% endif %}
+    </p>
+{% endblock %}
+
+{% block body -%}
+    <div class="btn-toolbar">
+        <div class="btn-group pull-right">
+            <a href="{{ path('provider') }}" class="btn btn-default">
+                <span class="glyphicon glyphicon-arrow-left"></span> Back
+            </a>
+        </div>
+    </div>
+
+    <table class="record_properties table table-striped table-bordered table-hover">
+        <tbody>
+            <tr>
+                <th>Uuid</th>
+                <td>{{ entity.uuid }}</td>
+            </tr>
+            <tr>
+                <th>Contacted</th>
+                <td>{{ entity.contacted|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
+                <th>Terms Accepted</th>
+                <td>{% if entity.termsAccepted %}Yes{% else %}No{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Notified</th>
+                <td>
+                    {% if entity.notified %}
+                        {{ entity.notified|date('Y-m-d H:i:s') }}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Title</th>
+                <td>{{ entity.title }}</td>
+            </tr>
+            <tr>
+                <th>OJS Version</th>
+                <td>{{ entity.ojsVersion }}</td>
+            </tr>
+            <tr>
+                <th>Issn</th>
+                <td>{{ entity.issn }}</td>
+            </tr>
+            <tr>
+                <th>Url</th>
+                <td><a href="{{ entity.url }}">{{ entity.url|preg_replace('~/~', '/&#8203;')|raw }}</a></td>
+            </tr>
+            <tr>
+                <th>Ping Url</th>
+                <td><a href="{{ entity.gatewayUrl }}">{{entity.gatewayUrl|preg_replace('~/~', '/&#8203;')|raw }}</a></td>
+            </tr>
+            <tr>
+                <th>Service Document</th>
+                <td><a href="{{ url('service_document', {'On-Behalf-Of': entity.uuid, 'Provider-Url': entity.url} ) }}">XML</a></td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ entity.status }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td><a href="mailto:{{ entity.email }}">{{ entity.email }}</a></td>
+            </tr>
+            <tr>
+                <th>Publisher Name</th>
+                <td>{{ entity.publisherName }}</td>
+            </tr>
+            <tr>
+                <th>Publisher Url</th>
+                <td><a href="{{ entity.publisherUrl }}">{{ entity.publisherUrl|preg_replace('~/~', '/&#8203;')|raw }}</a></td>
+            </tr>
+            <tr>
+                <th>Deposits</th>
+                <td>
+                    <a href="{{ path('provider_deposits', {'id': entity.id}) }}">
+                        {{ entity.countDeposits() }}
+                    </a>
+                </td>
+            </tr>    
+            <tr>
+                <th>Permissions</th>
+                <td>
+                    {% if blackwhitelist.isWhitelisted(entity.uuid) %}
+                        Whitelisted
+                    {% elseif blackwhitelist.isBlacklisted(entity.uuid) %}
+                        Blacklisted
+                    {% endif %}				
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    {% if entity.countDeposits() > 0 %}
+        <p>Once a provider has made deposits it cannot be deleted.</p>
+    {% else %}
+
+        {{ form(form) }}
+
+    {% endif %}
+
+
+{% endblock %}

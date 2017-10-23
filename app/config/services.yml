@@ -1,0 +1,104 @@
+# Learn more about services, parameters and containers at
+# http://symfony.com/doc/current/book/service_container.html
+parameters:
+#    parameter_name: value
+
+services:
+    
+    # There's a bug or an incompatibility or something in FOSUserBundle
+    # with Symfony 2.7 and 2.8. This fixes it.
+    fos_user.doctrine_registry:
+        alias: doctrine
+    
+    appuserbundle.user_manipulator:
+        class: AppUserBundle\Util\UserManipulator
+        arguments: [@fos_user.user_manager]
+
+    sword_exception_listener:
+        class: AppBundle\EventListener\SwordExceptionListener
+        calls: 
+            - [ setLogger, ["@monolog.logger.sword"]]
+            - [ setTemplating, ["@templating"]]
+            - [ setRequestStack, ["@request_stack"]]
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException } 
+            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController}
+
+    blackwhitelist:
+        class: AppBundle\Services\BlackWhitelist
+        arguments: ["@doctrine"]
+
+    depositbuilder:
+        class: AppBundle\Services\DepositBuilder
+        calls:
+            - [ setManager, ["@doctrine"]]
+            - [ setLogger, ["@monolog.logger"]]
+            - [ setRouter, ["@router"]]
+
+    providerbuilder:
+        class: AppBundle\Services\ProviderBuilder
+        calls:
+            - [ setManager, ["@doctrine"]]
+            - [ setLogger, ["@monolog.logger"]]
+            - [ setRouter, ["@router"]]
+
+    dtdvalidator:
+        class: AppBundle\Services\DtdValidator
+
+    virus_scanner:
+        class: AppBundle\Services\VirusScanner
+        arguments: ["%clamdscan_path%"]
+        
+    sword_client:
+        class: AppBundle\Services\SwordClient
+        arguments: ["%lockssomatic_sd_iri%", "%staging_server_uuid%", "%save_deposit_xml%"]
+        calls:
+            - [ setLogger, ["@monolog.logger.processing"]]
+            - [ setTemplating, ["@templating"]]
+            - [ setRouter, ["@router"]]
+            - [ setPlnProviderTitle, ["%pln_institution_name%"]]
+            - [ setFilePaths, ["@filepaths"]]
+
+    twig.extension.pcre:
+        class: Jasny\Twig\PcreExtension
+        tags:
+            - { name: twig.extension }
+
+    terms_of_use_listener:
+        class: AppBundle\EventListener\TermsOfUseListener
+        calls:
+            - [ setLogger, ["@monolog.logger" ]]
+            - [ setTokenStorage, ["@security.token_storage" ]]
+        tags:
+            - { name: doctrine.event_listener, event: postPersist }
+            - { name: doctrine.event_listener, event: postUpdate }
+            - { name: doctrine.event_listener, event: preRemove }
+
+    ping:
+        class: AppBundle\Services\Ping
+        calls:
+            - [ setManager, ["@doctrine"]]
+            - [ setLogger, ["@monolog.logger" ]]
+
+    filepaths:
+        class: AppBundle\Services\FilePaths
+        calls:
+            - [ setBaseDir, ["%pln_data_dir%"]]
+            - [ setLogger, ["@monolog.logger" ]]
+            - [ setKernelEnv, ["%kernel.root_dir%"]]
+
+    twig.extension.text:
+        class: Twig_Extensions_Extension_Text
+        tags:
+            - { name: twig.extension }
+ 
+    # http://www.petethompson.net/blog/symfony/2015/03/15/symfony-logging-client-ip/
+    monolog.processor.web:
+        class: Monolog\Processor\WebProcessor
+        tags:
+            - { name: monolog.processor }
+
+    monolog.formatter.standard:
+        class: Monolog\Formatter\LineFormatter
+        arguments:
+            format: "%%datetime%% | %%extra.ip%% | %%channel%%.%%level_name%%: %%message%% %%context%%\n"

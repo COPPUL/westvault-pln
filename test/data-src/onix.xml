@@ -1,0 +1,16 @@
+<ONIXPreservationHoldings
+    version="0.2"
+    xmlns="http://www.editeur.org/onix/serials/SOH">
+    <Header>
+        <Sender>
+            <SenderName>Public Knowledge Project PLN</SenderName>
+        </Sender>
+        <SentDateTime>20160427</SentDateTime>
+        <CompleteFile/>
+    </Header>
+    <HoldingsList>
+        <PreservationAgency>
+            <PreservationAgencyName>Public Knowledge Project PLN</PreservationAgencyName>
+        </PreservationAgency>
+    </HoldingsList>
+</ONIXPreservationHoldings>
