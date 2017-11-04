@@ -98,6 +98,14 @@
                 </td>
             </tr>
             <tr>
+                <th>Preserved Deposit</th>
+                <td>
+                    <a href='{{ url('original_deposit', { 'providerUuid': entity.provider.uuid, 'depositUuid': entity.depositUuid }) }}'>
+                        {{ url('original_deposit', { 'providerUuid': entity.provider.uuid, 'depositUuid': entity.depositUuid }) }}
+                    </a>
+                </td>
+            </tr>
+            <tr>
                 <th>Processing log</th>
                 <td>
                     {{- entity.processingLog|nl2br -}}

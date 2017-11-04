@@ -57,7 +57,7 @@ class HarvestCommand extends AbstractProcessingCmd
         if (!$this->client) {
             $this->client = new Client();
             $headers = $this->client->getDefaultOption('headers');
-            $headers['User-Agent'] = 'PkpPlnBot 1.0; http://pkp.sfu.ca';
+            $headers['User-Agent'] = 'WestVaultPlnBot 1.0';
             $this->client->setDefaultOption('headers', $headers);
         }
 

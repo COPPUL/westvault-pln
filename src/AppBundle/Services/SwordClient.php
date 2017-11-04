@@ -19,8 +19,8 @@ use Symfony\Component\Routing\Router;
 /**
  * Bespoke sword client, for use with LOCKSSOMatic.
  */
-class SwordClient
-{
+class SwordClient {
+
     /**
      * IRI for the service document.
      *
@@ -118,8 +118,7 @@ class SwordClient
      * @param string $serverUuid
      * @param bool   $saveDepositXml
      */
-    public function __construct($sdIri, $serverUuid, $saveDepositXml)
-    {
+    public function __construct($sdIri, $serverUuid, $saveDepositXml) {
         $this->sdIri = $sdIri;
         $this->serverUuid = $serverUuid;
         $this->logger = null;
@@ -132,16 +131,14 @@ class SwordClient
      *
      * @param Client $client
      */
-    public function setClient(Client $client)
-    {
+    public function setClient(Client $client) {
         $this->client = $client;
     }
 
     /**
      * @return Client
      */
-    public function getClient()
-    {
+    public function getClient() {
         if (!$this->client) {
             $this->client = new Client();
         }
@@ -154,8 +151,7 @@ class SwordClient
      *
      * @param string $plnProviderTitle
      */
-    public function setPlnProviderTitle($plnProviderTitle)
-    {
+    public function setPlnProviderTitle($plnProviderTitle) {
         $this->plnProviderTitle = $plnProviderTitle;
     }
 
@@ -164,8 +160,7 @@ class SwordClient
      *
      * @param Logger $logger
      */
-    public function setLogger(Logger $logger)
-    {
+    public function setLogger(Logger $logger) {
         $this->logger = $logger;
     }
 
@@ -174,8 +169,7 @@ class SwordClient
      *
      * @param TwigEngine $templating
      */
-    public function setTemplating(TwigEngine $templating)
-    {
+    public function setTemplating(TwigEngine $templating) {
         $this->templating = $templating;
     }
 
@@ -184,8 +178,7 @@ class SwordClient
      *
      * @param Router $router
      */
-    public function setRouter(Router $router)
-    {
+    public function setRouter(Router $router) {
         $this->router = $router;
     }
 
@@ -194,8 +187,7 @@ class SwordClient
      *
      * @param FilePaths $filePaths
      */
-    public function setFilePaths(FilePaths $filePaths)
-    {
+    public function setFilePaths(FilePaths $filePaths) {
         $this->filePaths = $filePaths;
     }
 
@@ -206,8 +198,7 @@ class SwordClient
      * @param array  $context
      * @param string $level
      */
-    private function log($message, $context = array(), $level = 'info')
-    {
+    private function log($message, $context = array(), $level = 'info') {
         $this->logger->log($level, $message, $context);
     }
 
@@ -218,8 +209,7 @@ class SwordClient
      *
      * @throws RequestException
      */
-    public function serviceDocument(Provider $provider)
-    {
+    public function serviceDocument(Provider $provider) {
         $client = $this->getClient();
         $headers = array(
             'On-Behalf-Of' => $this->serverUuid,
@@ -251,18 +241,17 @@ class SwordClient
      *
      * @return bool true on success
      */
-    public function createDeposit(Deposit $deposit)
-    {
+    public function createDeposit(Deposit $deposit) {
         $this->serviceDocument($deposit->getProvider());
         $xml = $this->templating->render('AppBundle:SwordClient:deposit.xml.twig', array(
-            'title' => 'Deposit from WestVault part '.$deposit->getAuContainer()->getId(),
+            'title' => 'Deposit from WestVault part ' . $deposit->getAuContainer()->getId(),
             'publisher' => 'WestVault Staging Server',
             'deposit' => $deposit,
             'baseUri' => $this->router->generate('home', array(), UrlGeneratorInterface::ABSOLUTE_URL),
             'plnProviderTitle' => $this->plnProviderTitle,
         ));
         if ($this->saveDepositXml) {
-            $atomPath = $this->filePaths->getHarvestDir($deposit->getProvider()).'/'.$deposit->getDepositUuid().'.xml';
+            $atomPath = $this->filePaths->getHarvestDir($deposit->getProvider()) . '/' . $deposit->getDepositUuid() . '.xml';
             file_put_contents($atomPath, $xml);
         }
         try {
@@ -277,8 +266,8 @@ class SwordClient
                 $xml = $e->getResponse()->xml();
                 $xml->registerXPathNamespace('atom', 'http://www.w3.org/2005/Atom');
                 $xml->registerXPathNamespace('sword', 'http://purl.org/net/sword/');
-                $this->logger->critical('Summary: '.(string) $xml->xpath('//atom:summary')[0]);
-                $this->logger->warning('Detail: '.(string) $xml->xpath('//sword:verboseDescription')[0]);
+                $this->logger->critical('Summary: ' . (string) $xml->xpath('//atom:summary')[0]);
+                $this->logger->warning('Detail: ' . (string) $xml->xpath('//sword:verboseDescription')[0]);
             }
 
             return false;
@@ -296,8 +285,7 @@ class SwordClient
         return true;
     }
 
-    public function receipt(Deposit $deposit)
-    {
+    public function receipt(Deposit $deposit) {
         $client = $this->getClient();
         $receiptRequest = $client->createRequest('GET', $deposit->getDepositReceipt());
         $receiptResponse = $client->send($receiptRequest);
@@ -316,8 +304,7 @@ class SwordClient
      *
      * @return \SimpleXMLElement
      */
-    public function statement(Deposit $deposit)
-    {
+    public function statement(Deposit $deposit) {
         $receipt = $this->receipt($deposit);
         $statementUrl = $receipt->xpath('atom:link[@rel="http://purl.org/net/sword/terms/statement"]/@href')[0];
         $client = $this->getClient();
@@ -329,13 +316,36 @@ class SwordClient
         return $statementXml;
     }
 
+    public function fetch(Deposit $deposit) {
+        $statement = $this->statement($deposit);
+        $originals = $statement->xpath('//sword:originalDeposit');
+        if (count($originals) > 1) {
+            throw new Exception("Deposits with multiple content URLs are not supported.");
+        }
+        $element = $originals[0];
+        $href = $element['href'];
+        $client = $this->getClient();
+        $filepath = $this->filePaths->getRestoreDir($deposit->getProvider()) . '/' . basename($href);
+        $this->logger->notice("Saving {$deposit->getProvider()->getName()} deposit {$deposit->getid()} to {$filepath}");
+
+        $client->get($href, array(
+            'allow_redirects' => false,
+            'decode_content' => false,
+            'save_to' => $filepath,
+        ));
+        $hash = hash_file($deposit->getChecksumType(), $filepath);
+        if ($hash !== $deposit->getChecksumValue()) {
+            $this->logger->warning("Package checksum failed. Expected {$deposit->getChecksumValue()} but got {$hash}");
+        }
+        return $filepath;
+    }
+
     /**
      * Get the site name, as used in deposits.
      *
      * @return string
      */
-    public function getSiteName()
-    {
+    public function getSiteName() {
         return $this->siteName;
     }
 
@@ -344,8 +354,7 @@ class SwordClient
      *
      * @return type
      */
-    public function getColIri()
-    {
+    public function getColIri() {
         return $this->colIri;
     }
 
@@ -354,8 +363,7 @@ class SwordClient
      *
      * @return int
      */
-    public function getMaxUpload()
-    {
+    public function getMaxUpload() {
         return $this->maxUpload;
     }
 
@@ -364,8 +372,8 @@ class SwordClient
      *
      * @return string
      */
-    public function getUploadChecksum()
-    {
+    public function getUploadChecksum() {
         return $this->uploadChecksum;
     }
+
 }

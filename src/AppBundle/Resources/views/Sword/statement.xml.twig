@@ -13,5 +13,8 @@
                       checksumValue="{{ deposit.checksumValue }}">
             {{ deposit.url }}
         </atom:content>
+        
+        <sword:originalDeposit href="{{ url('original_deposit', {'providerUuid': deposit.provider.uuid, 'depositUuid': deposit.depositUuid }) }}" />
+        
     </atom:entry>
 </atom:feed>

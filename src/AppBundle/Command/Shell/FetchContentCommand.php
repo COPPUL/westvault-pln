@@ -104,32 +104,6 @@ class FetchContentCommand extends ContainerAwareCommand
     }
 
     /**
-     * Fetch one deposit from LOCKSSOMatic.
-     *
-     * @param Deposit $deposit
-     * @param string  $href
-     */
-    public function fetch(Deposit $deposit, $href)
-    {
-        $client = $this->getHttpClient();
-        $filepath = $this->filePaths->getRestoreDir($deposit->getProvider()).'/'.basename($href);
-        $this->logger->notice("Saving {$deposit->getProvider()->getTitle()} vol. {$deposit->getVolume()} no. {$deposit->getIssue()} to {$filepath}");
-        try {
-            $client->get($href, array(
-                'allow_redirects' => false,
-                'decode_content' => false,
-                'save_to' => $filepath,
-            ));
-            $hash = strtoupper(hash_file($deposit->getPackageChecksumType(), $filepath));
-            if ($hash !== $deposit->getPackageChecksumValue()) {
-                $this->logger->warning("Package checksum failed. Expected {$deposit->getPackageChecksumValue()} but got {$hash}");
-            }
-        } catch (Exception $ex) {
-            $this->logger->error($ex->getMessage());
-        }
-    }
-
-    /**
      * Download all the content from one provider.
      *
      * Requests a SWORD deposit statement from LOCKSSOMatic, and uses the
@@ -140,12 +114,7 @@ class FetchContentCommand extends ContainerAwareCommand
     public function downloadProvider(Provider $provider)
     {
         foreach ($provider->getDeposits() as $deposit) {
-            $statement = $this->swordClient->statement($deposit);
-            $originals = $statement->xpath('//sword:originalDeposit');
-
-            foreach ($originals as $element) {
-                $this->fetch($deposit, $element['href']);
-            }
+            $this->swordClient->fetch($deposit);
         }
     }
 
