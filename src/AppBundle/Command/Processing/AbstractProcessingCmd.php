@@ -207,12 +207,14 @@ abstract class AbstractProcessingCmd extends ContainerAwareCommand
                 continue;
             }
 
-            if ($result) {
+            if ($result === true) {
                 $deposit->setState($this->nextState());
                 $deposit->addToProcessingLog($this->successLogMessage());
-            } else {
+            } elseif($result === false) {
                 $deposit->setState($this->errorState());
                 $deposit->addToProcessingLog($this->failureLogMessage());
+            } elseif($result === null) {
+                // dunno, do nothing I guess.
             }
             $this->em->flush($deposit);
         }
