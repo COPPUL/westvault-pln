@@ -316,6 +316,17 @@ class SwordClient {
         return $statementXml;
     }
 
+    protected function hashFile($algorithm, $filepath) {
+        $handle = fopen($filepath, "r");
+        $context = hash_init($algorithm);
+        while(($data = fread($handle, 64 * 1024))) {
+            hash_update($context, $data);
+        }
+        $hash = hash_final($context);
+        fclose($handle); 
+        return $hash;
+    }
+    
     public function fetch(Deposit $deposit) {
         $statement = $this->statement($deposit);
         $originals = $statement->xpath('//sword:originalDeposit');
@@ -333,7 +344,7 @@ class SwordClient {
             'decode_content' => false,
             'save_to' => $filepath,
         ));
-        $hash = hash_file($deposit->getChecksumType(), $filepath);
+        $hash = $this->hashFile($deposit->getChecksumType(), $filepath);
         if ($hash !== $deposit->getChecksumValue()) {
             $this->logger->warning("Package checksum failed. Expected {$deposit->getChecksumValue()} but got {$hash}");
         }
