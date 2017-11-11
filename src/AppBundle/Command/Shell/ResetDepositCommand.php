@@ -67,7 +67,7 @@ class ResetDepositCommand extends ContainerAwareCommand
     {
         $repo = $this->em->getRepository('AppBundle:Deposit');
         $deposits = array();
-        if (count($uuids) > 0) {
+        if ($uuids && count($uuids) > 0) {
             $deposits = $repo->findBy(array('depositUuid' => $uuids));
         } else {
             $deposits = $repo->findAll();

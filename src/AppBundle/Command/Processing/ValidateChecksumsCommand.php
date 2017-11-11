@@ -19,6 +19,17 @@ class ValidateChecksumsCommand extends AbstractProcessingCmd
         $this->setDescription('Validate PLN deposit files.');
         parent::configure();
     }
+    
+    protected function hashFile($hash, $filepath) {
+        $handle = fopen($filepath, "r");
+        $context = hash_init($hash);
+        while(($data = fread($handle, 64 * 1024))) {
+            hash_update($context, $data);
+        }
+        $hash = hash_final($context);
+        fclose($handle); 
+        return $hash;
+    }
 
     /**
      * {@inheritdoc}
@@ -31,11 +42,11 @@ class ValidateChecksumsCommand extends AbstractProcessingCmd
             throw new Exception("Cannot find deposit bag {$depositPath}");
         }
 
-        $checksumValue = hash($deposit->getChecksumType(), file_get_contents($depositPath));
+        $checksumValue = $this->hashFile($deposit->getChecksumType(),$depositPath);
         if ($checksumValue !== $deposit->getChecksumValue()) {
             $deposit->addErrorLog("Deposit checksum does not match. Expected {$deposit->getChecksumValue()} != Actual ".strtoupper($checksumValue));
             $this->logger->warning("Deposit checksum does not match for deposit {$deposit->getDepositUuid()}");
-
+            
             return false;
         }
         $this->logger->info("Deposit {$depositPath} validated.");
