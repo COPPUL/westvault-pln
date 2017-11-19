@@ -421,9 +421,9 @@ class SwordController extends Controller
             $acceptingLog = 'accepting';
         }
 
-        $logger->notice("edit deposit - {$request->getClientIp()} - {$providerUuid} - {$acceptingLog}");
+        $logger->notice("fetch deposit - {$request->getClientIp()} - {$providerUuid} - {$acceptingLog}");
         if (!$accepting) {
-            throw new SwordException(400, 'Not authorized to edit deposits.');
+            throw new SwordException(400, 'Not authorized to download deposits.');
         }
 
         $em = $this->getDoctrine()->getManager();
@@ -450,7 +450,9 @@ class SwordController extends Controller
         
         $swordClient = $this->get('sword_client');
         $filepath = $swordClient->fetch($deposit);
-        
+        if( !file_exists($filepath)) {
+            throw new \Exception("Cannot find {$filepath}.");
+        }
         $response = new BinaryFileResponse($filepath);
         $response->setContentDisposition('attachment', $depositUuid);
         $response->setStatusCode(Response::HTTP_OK);

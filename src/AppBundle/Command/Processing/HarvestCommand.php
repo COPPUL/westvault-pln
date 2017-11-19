@@ -189,8 +189,6 @@ class HarvestCommand extends AbstractProcessingCmd
         foreach ($deposits as $deposit) {
             $harvestSize += $deposit->getSize();
         }
-        // deposits report their sizes in 1000-byte units.
-        $harvestSize *= 1000;
         $this->logger->notice("Harvest expected to consume {$harvestSize} bytes.");
         $harvestPath = $this->filePaths->getHarvestDir();
 
