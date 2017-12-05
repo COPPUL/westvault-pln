@@ -450,6 +450,9 @@ class SwordController extends Controller
         
         $swordClient = $this->get('sword_client');
         $filepath = $swordClient->fetch($deposit);
+        if($filepath === null) {
+            throw new \Exception("Unknown error occured during download. Please check the logs.");
+        }
         if( !file_exists($filepath)) {
             throw new \Exception("Cannot find {$filepath}.");
         }

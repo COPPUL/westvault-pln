@@ -333,21 +333,23 @@ class SwordClient {
         if (count($originals) > 1) {
             throw new Exception("Deposits with multiple content URLs are not supported.");
         }
-        $element = $originals[0];
-        $href = $element['href'];
+        $element = $originals[0];        
+        $href = $element['href'];        
         $client = $this->getClient();
-        $filepath = $this->filePaths->getRestoreDir($deposit->getProvider()) . '/' . basename($href);
-        $this->logger->notice("Saving {$deposit->getProvider()->getName()} deposit {$deposit->getid()} to {$filepath}");
-
-        $client->get($href, array(
-            'allow_redirects' => false,
-            'decode_content' => false,
-            'save_to' => $filepath,
-        ));
+        $filepath = $this->filePaths->getRestoreDir($deposit->getProvider()) . '/' . $deposit->getDepositUuid();
+        try {
+            $response = $client->get($href, [
+                'save_to' => $filepath,
+            ]);
+        } catch(\Exception $e) {
+            $this->logger->critical("Cannot download content from {$href}: {$e->getMessage()}");
+            return null;
+        }
         $hash = $this->hashFile($deposit->getChecksumType(), $filepath);
         if ($hash !== $deposit->getChecksumValue()) {
             $this->logger->warning("Package checksum failed. Expected {$deposit->getChecksumValue()} but got {$hash}");
         }
+        $this->logger->critical("Saved to {$filepath}");
         return $filepath;
     }
 
