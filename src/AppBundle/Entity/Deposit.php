@@ -120,7 +120,7 @@ class Deposit
      *
      * @var int
      *
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="bigint")
      */
     private $size;
 
