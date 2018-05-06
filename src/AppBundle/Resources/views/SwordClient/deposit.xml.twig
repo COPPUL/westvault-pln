@@ -10,7 +10,7 @@
         Content deposited to LOCKSS-O-Matic via the PKP PLN Staging Server.
     </summary>
     <!-- @size is the file size in kB (1,000 bytes) -->
-    <lom:content 
+    <lom:content
         size="{{ deposit.size / 1000 | round(0, 'floor') }}"
         checksumType="{{ deposit.checksumType }}"
         checksumValue="{{ deposit.checksumValue }}"
@@ -22,5 +22,8 @@
         <lom:property name="base_url" value="{{ url('home') }}" />
         <lom:property name="permission_url" value="{{ url('lockss_permission') }}" />
         <lom:property name="container_number" value="{{ deposit.aucontainer.id }}"/>
+        {% for name,content in deposit.properties %}
+            <lom:property name="{{name}}" value="{{content}}"/>
+        {% endfor %}
     </lom:content>
 </entry>

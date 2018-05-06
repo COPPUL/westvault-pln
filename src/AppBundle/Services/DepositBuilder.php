@@ -159,6 +159,11 @@ class DepositBuilder
         $deposit->setUrl(html_entity_decode($this->getXmlValue($xml, 'pkp:content')));
         $deposit->setDepositReceipt($this->buildDepositReceiptUrl($deposit));
 
+        // <meta xmlns="http://lockssomatic.info/SWORD2" name="institution" content="sfu"/>
+        foreach($xml->xpath('//lom:meta') as $node) {
+            $deposit->setProperty((string)$node['name'], (string)$node['content']);
+        }
+
         if ($action === 'add') {
             $deposit->addToProcessingLog('Deposit received.');
         } else {

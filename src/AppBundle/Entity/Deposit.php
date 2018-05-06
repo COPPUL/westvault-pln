@@ -20,7 +20,7 @@ class Deposit
      * a deposit doesn't have a version attribute, then assume it is OJS 2.4.8.
      */
     const DEFAULT_JOURNAL_VERSION = '2.4.8';
-    
+
     /**
      * Database ID.
      *
@@ -41,7 +41,7 @@ class Deposit
      * @ORM\JoinColumn(name="provider_id", referencedColumnName="id")
      */
     private $provider;
-    
+
     /**
      * The AuContainer that holds this deposit.
      *
@@ -116,6 +116,14 @@ class Deposit
     private $url;
 
     /**
+     * Custom properties.
+     *
+     * @var array
+     * @ORM\Column(type="array")
+     */
+    private $properties;
+
+    /**
      * Size of the deposit, in bytes.
      *
      * @var int
@@ -183,7 +191,7 @@ class Deposit
      * @ORM\Column(type="text")
      */
     private $processingLog;
-    
+
     /**
      * @var integer
      * @ORM\Column(type="integer")
@@ -196,6 +204,7 @@ class Deposit
     public function __construct()
     {
         $this->received = new DateTime();
+        $this->properties = array();
         $this->processingLog = '';
         $this->state = 'depositedByProvider';
         $this->errorLog = array();
@@ -207,7 +216,7 @@ class Deposit
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -230,7 +239,7 @@ class Deposit
     /**
      * Get fileType
      *
-     * @return string 
+     * @return string
      */
     public function getFileType()
     {
@@ -253,13 +262,13 @@ class Deposit
     /**
      * Get depositUuid
      *
-     * @return string 
+     * @return string
      */
     public function getDepositUuid()
     {
         return $this->depositUuid;
     }
-    
+
     public function getFileName() {
         return $this->depositUuid;
     }
@@ -280,7 +289,7 @@ class Deposit
     /**
      * Get received
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getReceived()
     {
@@ -303,7 +312,7 @@ class Deposit
     /**
      * Get action
      *
-     * @return string 
+     * @return string
      */
     public function getAction()
     {
@@ -326,7 +335,7 @@ class Deposit
     /**
      * Get checksumType
      *
-     * @return string 
+     * @return string
      */
     public function getChecksumType()
     {
@@ -349,7 +358,7 @@ class Deposit
     /**
      * Get checksumValue
      *
-     * @return string 
+     * @return string
      */
     public function getChecksumValue()
     {
@@ -372,11 +381,28 @@ class Deposit
     /**
      * Get url
      *
-     * @return string 
+     * @return string
      */
     public function getUrl()
     {
         return $this->url;
+    }
+
+    public function setProperty($name, $value){
+        $this->properties[$name] = $value;
+        return $this;
+    }
+    public function removeProperty($name){
+        if(isset($this->properties[$name])) {
+            unset($this->properties[$name]);
+        }
+        return $this;
+    }
+    public function setProperties($properties) {
+        $this->properties = $properties;
+    }
+    public function getProperties() {
+        return $this->properties;
     }
 
     /**
@@ -395,7 +421,7 @@ class Deposit
     /**
      * Get size
      *
-     * @return integer 
+     * @return integer
      */
     public function getSize()
     {
@@ -418,7 +444,7 @@ class Deposit
     /**
      * Get state
      *
-     * @return string 
+     * @return string
      */
     public function getState()
     {
@@ -441,13 +467,13 @@ class Deposit
     /**
      * Get errorLog
      *
-     * @return array 
+     * @return array
      */
     public function getErrorLog()
     {
         return $this->errorLog;
     }
-    
+
     public function addErrorLog($message) {
         $this->errorLog[] = $message;
         $this->errorCount++;
@@ -469,7 +495,7 @@ class Deposit
     /**
      * Get errorCount
      *
-     * @return integer 
+     * @return integer
      */
     public function getErrorCount()
     {
@@ -492,7 +518,7 @@ class Deposit
     /**
      * Get plnState
      *
-     * @return string 
+     * @return string
      */
     public function getPlnState()
     {
@@ -515,7 +541,7 @@ class Deposit
     /**
      * Get depositDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDepositDate()
     {
@@ -538,7 +564,7 @@ class Deposit
     /**
      * Get depositReceipt
      *
-     * @return string 
+     * @return string
      */
     public function getDepositReceipt()
     {
@@ -561,13 +587,13 @@ class Deposit
     /**
      * Get processingLog
      *
-     * @return string 
+     * @return string
      */
     public function getProcessingLog()
     {
         return $this->processingLog;
     }
-    
+
     public function addToProcessingLog($message) {
         if($this->processingLog) {
             $this->processingLog .= "\n" . $message;
@@ -593,7 +619,7 @@ class Deposit
     /**
      * Get harvestAttempts
      *
-     * @return integer 
+     * @return integer
      */
     public function getHarvestAttempts()
     {
@@ -616,7 +642,7 @@ class Deposit
     /**
      * Get provider
      *
-     * @return Provider 
+     * @return Provider
      */
     public function getProvider()
     {
@@ -639,7 +665,7 @@ class Deposit
     /**
      * Get auContainer
      *
-     * @return AuContainer 
+     * @return AuContainer
      */
     public function getAuContainer()
     {

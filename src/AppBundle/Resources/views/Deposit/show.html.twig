@@ -53,6 +53,18 @@
                 <td><a href="{{ entity.url }}">{{ entity.url|preg_replace('~/~', '/&#8203;')|raw }}</a></td>
             </tr>
             <tr>
+                <th>Properties</th>
+                <td>
+                    {% if entity.properties|length > 0 %}
+                        <dl class="dl-horizontal">
+                            {% for name,content in entity.properties %}
+                                <dt>{{ name }}</dt>
+                                <dd>{{ content }}</dd>
+                            {% endfor %}
+                        </dl>
+                    {% endif %}
+                </td>
+            <tr>
                 <th>Size (kb)</th>
                 <td>{{ entity.size }}</td>
             </tr>
