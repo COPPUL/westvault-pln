@@ -244,7 +244,7 @@ class SwordClient {
     public function createDeposit(Deposit $deposit) {
         $this->serviceDocument($deposit->getProvider());
         $xml = $this->templating->render('AppBundle:SwordClient:deposit.xml.twig', array(
-            'title' => 'Deposit from WestVault part ' . $deposit->getAuContainer()->getId(),
+            'title' => 'Deposit from WestVault',
             'publisher' => 'WestVault Staging Server',
             'deposit' => $deposit,
             'baseUri' => $this->router->generate('home', array(), UrlGeneratorInterface::ABSOLUTE_URL),
@@ -323,18 +323,18 @@ class SwordClient {
             hash_update($context, $data);
         }
         $hash = hash_final($context);
-        fclose($handle); 
+        fclose($handle);
         return $hash;
     }
-    
+
     public function fetch(Deposit $deposit) {
         $statement = $this->statement($deposit);
         $originals = $statement->xpath('//sword:originalDeposit');
         if (count($originals) > 1) {
             throw new Exception("Deposits with multiple content URLs are not supported.");
         }
-        $element = $originals[0];        
-        $href = $element['href'];        
+        $element = $originals[0];
+        $href = $element['href'];
         $client = $this->getClient();
         $filepath = $this->filePaths->getRestoreDir($deposit->getProvider()) . '/' . $deposit->getDepositUuid();
         try {

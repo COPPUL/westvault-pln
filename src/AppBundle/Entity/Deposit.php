@@ -43,16 +43,6 @@ class Deposit
     private $provider;
 
     /**
-     * The AuContainer that holds this deposit.
-     *
-     * @var AuContainer
-     *
-     * @ORM\ManyToOne(targetEntity="AuContainer", inversedBy="deposits")
-     * @ORM\JoinColumn(name="au_container_id", referencedColumnName="id", nullable=true)
-     */
-    private $auContainer;
-
-    /**
      * Bagit doesn't understand compressed files that don't have a file
      * extension. So set the file type, and build file names from that.
      *
@@ -649,26 +639,4 @@ class Deposit
         return $this->provider;
     }
 
-    /**
-     * Set auContainer
-     *
-     * @param AuContainer $auContainer
-     * @return Deposit
-     */
-    public function setAuContainer(AuContainer $auContainer = null)
-    {
-        $this->auContainer = $auContainer;
-
-        return $this;
-    }
-
-    /**
-     * Get auContainer
-     *
-     * @return AuContainer
-     */
-    public function getAuContainer()
-    {
-        return $this->auContainer;
-    }
 }

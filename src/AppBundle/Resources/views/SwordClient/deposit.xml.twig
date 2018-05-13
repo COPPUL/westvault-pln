@@ -21,7 +21,6 @@
         {{ url('fetch', { 'providerUuid': deposit.provider.uuid, 'depositUuid': deposit.depositUuid }) }}
         <lom:property name="base_url" value="{{ url('home') }}" />
         <lom:property name="permission_url" value="{{ url('lockss_permission') }}" />
-        <lom:property name="container_number" value="{{ deposit.aucontainer.id }}"/>
         {% for name,content in deposit.properties %}
             <lom:property name="{{name}}" value="{{content}}"/>
         {% endfor %}
