@@ -21,8 +21,6 @@
         {{ url('fetch', { 'providerUuid': deposit.provider.uuid, 'depositUuid': deposit.depositUuid }) }}
         <lom:property name="base_url" value="{{ url('home') }}" />
         <lom:property name="permission_url" value="{{ url('lockss_permission') }}" />
-        {% for name,content in deposit.properties %}
-            <lom:property name="{{name}}" value="{{content}}"/>
-        {% endfor %}
+        <lom:property name="institution" value="{{ deposit.institution }}"/>
     </lom:content>
 </entry>

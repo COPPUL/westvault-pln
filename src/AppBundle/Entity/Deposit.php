@@ -43,6 +43,14 @@ class Deposit
     private $provider;
 
     /**
+     * Name of the institution making the deposit.
+     *
+     * @var string
+     * @ORM\Column(type="string", length=64, nullable=false);
+     */
+    private $institution;
+
+    /**
      * Bagit doesn't understand compressed files that don't have a file
      * extension. So set the file type, and build file names from that.
      *
@@ -104,14 +112,6 @@ class Deposit
      * @ORM\Column(type="string", length=2048)
      */
     private $url;
-
-    /**
-     * Custom properties.
-     *
-     * @var array
-     * @ORM\Column(type="array")
-     */
-    private $properties;
 
     /**
      * Size of the deposit, in bytes.
@@ -194,7 +194,6 @@ class Deposit
     public function __construct()
     {
         $this->received = new DateTime();
-        $this->properties = array();
         $this->processingLog = '';
         $this->state = 'depositedByProvider';
         $this->errorLog = array();
@@ -376,23 +375,6 @@ class Deposit
     public function getUrl()
     {
         return $this->url;
-    }
-
-    public function setProperty($name, $value){
-        $this->properties[$name] = $value;
-        return $this;
-    }
-    public function removeProperty($name){
-        if(isset($this->properties[$name])) {
-            unset($this->properties[$name]);
-        }
-        return $this;
-    }
-    public function setProperties($properties) {
-        $this->properties = $properties;
-    }
-    public function getProperties() {
-        return $this->properties;
     }
 
     /**
@@ -639,4 +621,27 @@ class Deposit
         return $this->provider;
     }
 
+
+    /**
+     * Set institution
+     *
+     * @param string $institution
+     * @return Deposit
+     */
+    public function setInstitution($institution)
+    {
+        $this->institution = $institution;
+
+        return $this;
+    }
+
+    /**
+     * Get institution
+     *
+     * @return string
+     */
+    public function getInstitution()
+    {
+        return $this->institution;
+    }
 }
