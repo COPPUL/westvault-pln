@@ -45,7 +45,6 @@ class RunAllCommand extends ContainerAwareCommand
             'pln:harvest',
             'pln:validate-checksums',
             'pln:scan-viruses',
-            'pln:organize',
             'pln:deposit',
             'pln:status',
         );
