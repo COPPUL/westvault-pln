@@ -244,7 +244,7 @@ class SwordClient {
     public function createDeposit(Deposit $deposit) {
         $this->serviceDocument($deposit->getProvider());
         $xml = $this->templating->render('AppBundle:SwordClient:deposit.xml.twig', array(
-            'title' => 'Deposit from WestVault',
+            'title' => 'Deposits from ' . $deposit->getInstitution(),
             'publisher' => 'WestVault Staging Server',
             'deposit' => $deposit,
             'baseUri' => $this->router->generate('home', array(), UrlGeneratorInterface::ABSOLUTE_URL),
