@@ -20,7 +20,7 @@ class Deposit
      * a deposit doesn't have a version attribute, then assume it is OJS 2.4.8.
      */
     const DEFAULT_JOURNAL_VERSION = '2.4.8';
-    
+
     /**
      * Database ID.
      *
@@ -41,16 +41,14 @@ class Deposit
      * @ORM\JoinColumn(name="provider_id", referencedColumnName="id")
      */
     private $provider;
-    
+
     /**
-     * The AuContainer that holds this deposit.
+     * Name of the institution making the deposit.
      *
-     * @var AuContainer
-     *
-     * @ORM\ManyToOne(targetEntity="AuContainer", inversedBy="deposits")
-     * @ORM\JoinColumn(name="au_container_id", referencedColumnName="id", nullable=true)
+     * @var string
+     * @ORM\Column(type="string", length=64, nullable=false);
      */
-    private $auContainer;
+    private $institution;
 
     /**
      * Bagit doesn't understand compressed files that don't have a file
@@ -183,7 +181,7 @@ class Deposit
      * @ORM\Column(type="text")
      */
     private $processingLog;
-    
+
     /**
      * @var integer
      * @ORM\Column(type="integer")
@@ -207,7 +205,7 @@ class Deposit
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -230,7 +228,7 @@ class Deposit
     /**
      * Get fileType
      *
-     * @return string 
+     * @return string
      */
     public function getFileType()
     {
@@ -253,13 +251,13 @@ class Deposit
     /**
      * Get depositUuid
      *
-     * @return string 
+     * @return string
      */
     public function getDepositUuid()
     {
         return $this->depositUuid;
     }
-    
+
     public function getFileName() {
         return $this->depositUuid;
     }
@@ -280,7 +278,7 @@ class Deposit
     /**
      * Get received
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getReceived()
     {
@@ -303,7 +301,7 @@ class Deposit
     /**
      * Get action
      *
-     * @return string 
+     * @return string
      */
     public function getAction()
     {
@@ -326,7 +324,7 @@ class Deposit
     /**
      * Get checksumType
      *
-     * @return string 
+     * @return string
      */
     public function getChecksumType()
     {
@@ -349,7 +347,7 @@ class Deposit
     /**
      * Get checksumValue
      *
-     * @return string 
+     * @return string
      */
     public function getChecksumValue()
     {
@@ -372,7 +370,7 @@ class Deposit
     /**
      * Get url
      *
-     * @return string 
+     * @return string
      */
     public function getUrl()
     {
@@ -395,7 +393,7 @@ class Deposit
     /**
      * Get size
      *
-     * @return integer 
+     * @return integer
      */
     public function getSize()
     {
@@ -418,7 +416,7 @@ class Deposit
     /**
      * Get state
      *
-     * @return string 
+     * @return string
      */
     public function getState()
     {
@@ -441,13 +439,13 @@ class Deposit
     /**
      * Get errorLog
      *
-     * @return array 
+     * @return array
      */
     public function getErrorLog()
     {
         return $this->errorLog;
     }
-    
+
     public function addErrorLog($message) {
         $this->errorLog[] = $message;
         $this->errorCount++;
@@ -469,7 +467,7 @@ class Deposit
     /**
      * Get errorCount
      *
-     * @return integer 
+     * @return integer
      */
     public function getErrorCount()
     {
@@ -492,7 +490,7 @@ class Deposit
     /**
      * Get plnState
      *
-     * @return string 
+     * @return string
      */
     public function getPlnState()
     {
@@ -515,7 +513,7 @@ class Deposit
     /**
      * Get depositDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDepositDate()
     {
@@ -538,7 +536,7 @@ class Deposit
     /**
      * Get depositReceipt
      *
-     * @return string 
+     * @return string
      */
     public function getDepositReceipt()
     {
@@ -561,13 +559,13 @@ class Deposit
     /**
      * Get processingLog
      *
-     * @return string 
+     * @return string
      */
     public function getProcessingLog()
     {
         return $this->processingLog;
     }
-    
+
     public function addToProcessingLog($message) {
         if($this->processingLog) {
             $this->processingLog .= "\n" . $message;
@@ -593,7 +591,7 @@ class Deposit
     /**
      * Get harvestAttempts
      *
-     * @return integer 
+     * @return integer
      */
     public function getHarvestAttempts()
     {
@@ -616,33 +614,34 @@ class Deposit
     /**
      * Get provider
      *
-     * @return Provider 
+     * @return Provider
      */
     public function getProvider()
     {
         return $this->provider;
     }
 
+
     /**
-     * Set auContainer
+     * Set institution
      *
-     * @param AuContainer $auContainer
+     * @param string $institution
      * @return Deposit
      */
-    public function setAuContainer(AuContainer $auContainer = null)
+    public function setInstitution($institution)
     {
-        $this->auContainer = $auContainer;
+        $this->institution = $institution;
 
         return $this;
     }
 
     /**
-     * Get auContainer
+     * Get institution
      *
-     * @return AuContainer 
+     * @return string
      */
-    public function getAuContainer()
+    public function getInstitution()
     {
-        return $this->auContainer;
+        return $this->institution;
     }
 }

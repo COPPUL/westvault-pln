@@ -152,6 +152,7 @@ class DepositBuilder
         $deposit->setState('depositedByProvider');
         $deposit->setChecksumType($this->getXmlValue($xml, 'pkp:content/@checksumType'));
         $deposit->setChecksumValue($this->getXmlValue($xml, 'pkp:content/@checksumValue'));
+        $deposit->setInstitution($this->getXmlValue($xml, 'pkp:content/@institution'));
         $deposit->setDepositUuid($deposit_uuid);
         $deposit->setFileType('');
         $deposit->setProvider($provider);
