@@ -56,7 +56,7 @@ class Provider
      * @ORM\Column(type="string", nullable=false)
      */
     private $name;
-    
+
     /**
      * The email of the provider.
      *
@@ -68,7 +68,7 @@ class Provider
     /**
      * The provider's deposits.
      * @var Deposit[]|Collection
-     * @ORM\OneToMany(targetEntity="Deposit", mappedBy="provider")
+     * @ORM\OneToMany(targetEntity="Deposit", mappedBy="provider", fetch="EXTRA_LAZY")
      */
     private $deposits;
 
@@ -84,7 +84,7 @@ class Provider
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -107,7 +107,7 @@ class Provider
     /**
      * Get uuid
      *
-     * @return string 
+     * @return string
      */
     public function getUuid()
     {
@@ -130,7 +130,7 @@ class Provider
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -163,13 +163,13 @@ class Provider
     /**
      * Get deposits
      *
-     * @return Collection 
+     * @return Collection
      */
     public function getDeposits()
     {
         return $this->deposits;
     }
-    
+
     public function countDeposits() {
         return $this->deposits->count();
     }
@@ -190,7 +190,7 @@ class Provider
     /**
      * Get email
      *
-     * @return string 
+     * @return string
      */
     public function getEmail()
     {
